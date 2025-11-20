@@ -1,0 +1,120 @@
+﻿@using System.Globalization
+@using AmwajGrocery.Models
+@{
+    ViewData["Title"] = "الرئيسية";
+    // التحقق من اللغة الحالية
+    var isAr = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
+
+    var deals = ViewBag.Deals as List<Product>;
+    var bestSellers = ViewBag.BestSellers as List<Product>;
+    var categories = ViewBag.Categories as List<Category>;
+    var defaultImage = "/images/logo-removebg-preview (3).png";
+}
+
+<div class="container" style="padding-top: 20px;">
+
+    <!-- قسم العروض -->
+    <section class="page-section">
+        <h2 style="color: var(--amwaj-accent); border-bottom: 2px solid var(--amwaj-accent); padding-bottom: 10px;">
+            @(isAr ? "عروض وتخفيضات اليوم" : "Today's Deals")
+        </h2>
+        <div class="product-grid">
+            @if (deals != null && deals.Any())
+            {
+                foreach (var item in deals)
+                {
+                    <div class="product-card" id="product-@item.Id">
+                        <div class="product-image-wrapper">
+                            <img src="@GetImageSrc(item.ImageUrl)" alt="@(isAr? item.NameAr: item.NameEn)"
+                                 referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
+                        </div>
+                        <!-- هنا يتم عرض الاسم حسب اللغة -->
+                        <h4>@(isAr? item.NameAr: item.NameEn)</h4>
+
+                        <div class="price-section">
+                            @if (item.OldPrice.HasValue)
+                            {
+                                <p class="original-price">@item.OldPrice.Value.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
+                            }
+                            <p class="current-price">@item.Price.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
+                        </div>
+
+                        <div class="quantity-control">
+                            <button class="qty-btn" onclick="updateQuantity(@item.Id, 'dec')"><i class="fas fa-minus"></i></button>
+                            <span class="qty-display" id="qty-@item.Id">1</span>
+                            <button class="qty-btn" onclick="updateQuantity(@item.Id, 'inc')"><i class="fas fa-plus"></i></button>
+                        </div>
+
+                        <button class="add-to-cart-btn" onclick="addToCart(@item.Id, '@(isAr? item.NameAr: item.NameEn)', @item.Price)">
+                            @(isAr ? "أضف للسلة" : "Add to Cart")
+                        </button>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="text-align:center; color:#777; width:100%;">@(isAr ? "لا توجد عروض حالياً." : "No deals available at the moment.")</p>
+            }
+        </div>
+    </section>
+
+    <!-- قسم الفئات -->
+    <section class="page-section" style="background-color: #fff; padding: 20px; border-radius: 10px;">
+        <h2 style="color: var(--amwaj-text-dark);">@(isAr ? "تسوق حسب الفئة" : "Shop by Category")</h2>
+        <div class="category-grid">
+            @if (categories != null)
+            {
+                foreach (var cat in categories)
+                {
+                    <div class="category-card" onclick="location.href='/Home/Products?categoryId=@cat.Id'">
+                        <img src="@GetImageSrc(cat.ImageUrl)" alt="@(isAr? cat.NameAr: cat.NameEn)"
+                             referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
+                        <!-- هنا يتم عرض اسم الفئة حسب اللغة -->
+                        <h4>@(isAr? cat.NameAr: cat.NameEn)</h4>
+                        <p style="font-size: 0.8em; color: #777;">
+                            (@(cat.Products?.Count() ?? 0) @(isAr ? "منتج" : "Products"))
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- قسم الأكثر مبيعاً -->
+    <section class="page-section">
+        <h2 style="color: var(--amwaj-primary);">@(isAr ? "الأكثر مبيعاً" : "Best Sellers")</h2>
+        <div class="product-grid">
+            @if (bestSellers != null && bestSellers.Any())
+            {
+                foreach (var item in bestSellers)
+                {
+                    <div class="product-card">
+                        <div class="product-image-wrapper">
+                            <img src="@GetImageSrc(item.ImageUrl)" alt="@(isAr? item.NameAr: item.NameEn)"
+                                 referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
+                        </div>
+                        <h4>@(isAr? item.NameAr: item.NameEn)</h4>
+                        <div class="price-section">
+                            <p class="current-price">@item.Price.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
+                        </div>
+                        <button class="add-to-cart-btn" onclick="addToCart(@item.Id, '@(isAr? item.NameAr: item.NameEn)', @item.Price)">
+                            @(isAr ? "أضف للسلة" : "Add to Cart")
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+</div>
+
+@functions {
+    public string GetImageSrc(string url)
+    {
+        string defaultImg = "/images/logo-removebg-preview (3).png";
+        if (string.IsNullOrEmpty(url)) return defaultImg;
+        if (url.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return url;
+        var cleanUrl = url.TrimStart('/');
+        if (!cleanUrl.StartsWith("images/", StringComparison.OrdinalIgnoreCase)) return "/images/" + cleanUrl;
+        return "/" + cleanUrl;
+    }
+}

@@ -1,0 +1,91 @@
+﻿@using System.Globalization
+@model IEnumerable<AmwajGrocery.Models.Product>
+@{
+    var isAr = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
+
+    var titleAr = ViewBag.CategoryNameAr as string ?? "المنتجات";
+    var titleEn = ViewBag.CategoryNameEn as string ?? "Products";
+    ViewData["Title"] = isAr ? titleAr : titleEn;
+
+    var defaultImage = "/images/logo-removebg-preview (3).png";
+}
+
+<div class="container" style="padding-top: 20px;">
+
+    <div class="page-section">
+        <h1 style="text-align: center; color: var(--amwaj-primary);">
+            @(isAr? titleAr : titleEn)
+        </h1>
+
+        @if (!string.IsNullOrEmpty(ViewBag.SearchQuery))
+        {
+            <p style="text-align: center; color: #777;">
+                @(isAr ? "نتائج البحث عن:" : "Search results for:") "@ViewBag.SearchQuery"
+            </p>
+        }
+
+        <p style="text-align: center; color: #777; margin-bottom: 30px;">
+            @(isAr ? "يوجد حالياً" : "Currently showing")
+            <span style="font-weight:bold; color:var(--amwaj-secondary);">@Model.Count()</span>
+            @(isAr ? "منتج" : "products")
+        </p>
+
+        @if (!Model.Any())
+        {
+            <div style="text-align: center; padding: 50px;">
+                <i class="fas fa-box-open fa-3x" style="color: #ccc; margin-bottom: 15px;"></i>
+                <h3>@(isAr ? "لا توجد منتجات متاحة حالياً." : "No products available.")</h3>
+                <a href="/" class="add-to-cart-btn" style="display: inline-block; width: auto; text-decoration: none;">
+                    @(isAr ? "العودة للرئيسية" : "Back to Home")
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="product-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="product-card" id="product-@item.Id">
+                        <div class="product-image-wrapper">
+                            <img src="@GetImageSrc(item.ImageUrl)" alt="@(isAr? item.NameAr: item.NameEn)"
+                                 referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
+                        </div>
+
+                        <h4>@(isAr? item.NameAr: item.NameEn)</h4>
+                        <p style="font-size: 0.9em; color: #777;">@item.Description</p>
+
+                        <div class="price-section">
+                            @if (item.OldPrice.HasValue)
+                            {
+                                <p class="original-price">@item.OldPrice.Value.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
+                            }
+                            <p class="current-price">@item.Price.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
+                        </div>
+
+                        <div class="quantity-control">
+                            <button class="qty-btn" onclick="updateQuantity(@item.Id, 'dec')"><i class="fas fa-minus"></i></button>
+                            <span class="qty-display" id="qty-@item.Id">1</span>
+                            <button class="qty-btn" onclick="updateQuantity(@item.Id, 'inc')"><i class="fas fa-plus"></i></button>
+                        </div>
+
+                        <button class="add-to-cart-btn" onclick="addToCart(@item.Id, '@(isAr? item.NameAr: item.NameEn)', @item.Price)">
+                            @(isAr ? "أضف للسلة" : "Add to Cart")
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    public string GetImageSrc(string url)
+    {
+        string defaultImg = "/images/logo-removebg-preview (3).png";
+        if (string.IsNullOrEmpty(url)) return defaultImg;
+        if (url.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return url;
+        var cleanUrl = url.TrimStart('/');
+        if (!cleanUrl.StartsWith("images/", StringComparison.OrdinalIgnoreCase)) return "/images/" + cleanUrl;
+        return "/" + cleanUrl;
+    }
+}

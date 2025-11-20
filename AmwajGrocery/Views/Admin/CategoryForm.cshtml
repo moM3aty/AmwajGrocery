@@ -1,0 +1,60 @@
+﻿@model AmwajGrocery.Models.Category
+@{
+    ViewData["Title"] = Model.Id == 0 ? "إضافة فئة" : "تعديل فئة";
+}
+
+<div class="container" style="padding-top: 40px; max-width: 700px;">
+    <div class="admin-form-card">
+
+        <div class="admin-form-header">
+            <h2>
+                <i class="fas @(Model.Id == 0 ? "fa-folder-plus" : "fa-folder-open")"></i>
+                @(Model.Id == 0 ? "إضافة فئة جديدة" : "تعديل الفئة")
+            </h2>
+        </div>
+
+        <!-- التعديل هنا: استخدام asp-action و asp-controller -->
+        <form asp-action="SaveCategory" asp-controller="Admin" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="ImageUrl" value="@Model.ImageUrl" />
+
+            <div class="form-grid" style="grid-template-columns: 1fr;">
+
+                <div class="form-group">
+                    <label class="form-label">اسم الفئة (عربي)</label>
+                    <input type="text" name="NameAr" value="@Model.NameAr" required class="form-input" placeholder="مثال: ألبان وأجبان" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">اسم الفئة (انجليزي)</label>
+                    <input type="text" name="NameEn" value="@Model.NameEn" required class="form-input" placeholder="Ex: Dairy & Cheese" style="direction: ltr;" />
+                </div>
+
+                <!-- حقل رفع صورة الفئة -->
+                <div class="form-group">
+                    <label class="form-label">صورة الفئة</label>
+                    <input type="file" name="ImageFile" class="form-input" accept="image/*" />
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div style="margin-top: 10px;">
+                            <span style="font-size: 0.8em; color: #666;">الصورة الحالية:</span>
+                            <br />
+                            <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))"
+                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; border: 1px solid #ddd;" />
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> حفظ الفئة
+                </button>
+                <a href="/Admin/Categories" class="btn-cancel">
+                    إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

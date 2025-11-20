@@ -1,0 +1,136 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@{
+    // الطريقة الصحيحة لقراءة اللغة الحالية من النظام
+    var currentCulture = CultureInfo.CurrentUICulture.Name;
+    var isAr = currentCulture.StartsWith("ar");
+    var dir = isAr ? "rtl" : "ltr";
+    var langCode = isAr ? "ar" : "en";
+    var targetLang = isAr ? "en" : "ar"; // اللغة التي سيتم التحويل إليها
+}
+
+<!DOCTYPE html>
+<html lang="@langCode" dir="@dir" class="@dir">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - @(isAr ? "بقالة أمواج صلالة" : "Amwaj Salalah Grocery")</title>
+    <link rel="stylesheet" href="~/css/style.css?v=3.1">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div id="screenshot-overlay">
+        <div>
+            <i class="fas fa-shield-alt fa-3x" style="margin-bottom: 20px;"></i>
+            <p>@(isAr ? "عذراً، يمنع التقاط صور للشاشة." : "Screenshots are not allowed.")</p>
+        </div>
+    </div>
+
+    <div id="custom-toast" class="toast-container"><span id="toast-message"></span></div>
+
+    <div id="cart-modal" class="cart-modal-overlay" onclick="closeCartModal(event)">
+        <div class="cart-modal-content">
+            <div class="cart-header">
+                <h3>@(isAr ? "سلة المشتريات" : "Shopping Cart")</h3>
+                <button onclick="closeCartModal(null)" class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cart-items-container" class="cart-body">
+                <p style="text-align:center; color:#777;">@(isAr ? "السلة فارغة" : "Cart is empty")</p>
+            </div>
+            <div class="cart-footer">
+                <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:15px;">
+                    <span>@(isAr ? "الإجمالي:" : "Total:")</span>
+                    <span id="cart-total-price">0.000 @(isAr ? "ر.ع" : "OMR")</span>
+                </div>
+                <button onclick="sendOrderToWhatsApp()" class="add-to-cart-btn" style="background-color:#25D366; margin:0;">
+                    <i class="fab fa-whatsapp"></i> @(isAr ? "إتمام الطلب" : "Checkout")
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="top-header-bar">
+            <div class="container header-container">
+                <div class="logo header-logo">
+                    <a href="/" style="display: flex; align-items: center; gap: 10px;">
+                        <img src="~/images/logo-removebg-preview (3).png" alt="Logo" style="height: 50px; width: auto;">
+                        <div class="logo-text-wrapper">
+                            <span class="main-logo-title">@(isAr ? "بقالة أمواج صلالة" : "Amwaj Salalah Grocery")</span>
+                            <span class="secondary-tagline">@(isAr ? "خدمة 24ساعة / توصيل سريع" : "24h Service / Fast Delivery")</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="header-actions-group">
+                    <!-- زر تغيير اللغة -->
+                    <form action="/Home/ChangeLanguage" method="post" style="display:inline;">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <input type="hidden" name="culture" value="@targetLang" />
+                        <button type="submit" class="lang-btn">
+                            <i class="fas fa-globe"></i>
+                            @(isAr ? "English" : "العربية")
+                        </button>
+                    </form>
+
+                    <button class="cart-btn" onclick="openCartModal()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <form action="/Home/Products" method="get" autocomplete="off">
+            <div class="search-bar-container">
+                <div class="container" style="position: relative;">
+                    <input type="text" name="q" id="product-search" class="search-input"
+                           placeholder="@(isAr ? "ابحث عن منتج..." : "Search for products...")"
+                           oninput="liveSearch(this.value)">
+                    <div id="live-search-results" class="live-search-results"></div>
+                </div>
+            </div>
+        </form>
+
+        <div class="scrolling-banner">
+            <div class="container">
+                <span id="marquee-text">@(isAr ? "✨ عروض موسمية وتخفيضات خاصة بانتظارك! تسوق الآن ووفر المزيد. ✨" : "✨ Seasonal offers and special discounts await! Shop now and save more. ✨")</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <div class="utility-buttons">
+        <button onclick="openCartModal()" class="back-btn" style="background-color:var(--amwaj-primary);">
+            <i class="fas fa-shopping-bag"></i>
+        </button>
+        <button onclick="scrollToTop()" class="back-btn"><i class="fas fa-arrow-up"></i></button>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-social-links" style="text-align: center; margin-bottom: 20px;">
+                <a href="https://tiktok.com/@@amwajsalalahgrocery" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.snapchat.com/add/amwajsalalahgro" target="_blank"><i class="fab fa-snapchat-ghost"></i></a>
+                <a href="https://www.instagram.com/amwajsalalahgrocery" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://facebook.com/amwajsalalahgrocery" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://api.whatsapp.com/send?phone=96896755118" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <p style="text-align: center; margin: 0; font-size: 0.9em; color: #777;">
+                &copy; 2025 @(isAr ? "بقالة أمواج صلالة. جميع الحقوق محفوظة." : "Amwaj Salalah Grocery. All rights reserved.")
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        var isArabic = @(isAr.ToString().ToLower());
+    </script>
+    <script src="~/js/main.js?v=3.1"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

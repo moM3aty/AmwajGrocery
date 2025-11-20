@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "لوحة التحكم";
+}
+
+<div class="container" style="padding-top: 40px; max-width: 900px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+            <h1 style="color: var(--amwaj-text-dark); margin-bottom: 5px;">أهلاً بك، المدير 👋</h1>
+            <p style="color: #777;">إليك نظرة عامة على متجرك</p>
+        </div>
+        <a href="/Admin/Logout" style="color: #e74c3c; font-weight: bold; display: flex; align-items: center; gap: 5px; text-decoration: none;">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </a>
+    </div>
+
+    <!-- قسم الإدارة العامة -->
+    <div class="page-section" style="background: white; padding: 30px; border-radius: 20px; box-shadow: var(--shadow-card); margin-bottom: 30px;">
+        <h3 style="color: var(--amwaj-primary); border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">
+            <i class="fas fa-rocket"></i> روابط سريعة
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+
+            <!-- زر الطلبات الجديد -->
+            <a href="/Admin/Orders" class="dashboard-card" style="background: linear-gradient(135deg, #6C5CE7, #a29bfe);">
+                <i class="fas fa-shopping-bag fa-2x"></i>
+                <span>إدارة الطلبات</span>
+            </a>
+
+            <a href="/Admin/Products" class="dashboard-card" style="background: linear-gradient(135deg, var(--amwaj-secondary), var(--amwaj-primary));">
+                <i class="fas fa-box-open fa-2x"></i>
+                <span>إدارة المنتجات</span>
+            </a>
+
+            <a href="/Admin/Categories" class="dashboard-card" style="background: linear-gradient(135deg, #00b894, #55efc4);">
+                <i class="fas fa-tags fa-2x"></i>
+                <span>إدارة الفئات</span>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- قسم الاستيراد -->
+    <div class="page-section" style="background: white; padding: 30px; border-radius: 20px; box-shadow: var(--shadow-card);">
+        <h3 style="color: #636e72; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+            <i class="fas fa-file-excel"></i> استيراد البيانات
+        </h3>
+
+        <div style="display: flex; flex-direction: column; align-items: center; padding: 20px;">
+            <p style="color: #666; margin-bottom: 20px; text-align: center;">
+                يمكنك تحديث قائمة المنتجات بالكامل دفعة واحدة عبر رفع ملف Excel.
+            </p>
+
+            <form method="post" enctype="multipart/form-data" action="/Admin/ImportExcel" style="width: 100%; max-width: 500px;">
+                <div style="border: 2px dashed #dfe6e9; padding: 30px; border-radius: 15px; text-align: center; transition: 0.3s; cursor: pointer; position: relative;"
+                     onclick="document.getElementById('excelFile').click()"
+                     onmouseover="this.style.borderColor='var(--amwaj-primary)'"
+                     onmouseout="this.style.borderColor='#dfe6e9'">
+
+                    <i class="fas fa-cloud-upload-alt fa-3x" style="color: #b2bec3; margin-bottom: 15px;"></i>
+                    <p style="margin: 0; font-weight: bold; color: #2d3436;">اضغط لرفع ملف Excel</p>
+                    <input type="file" id="excelFile" name="file" accept=".xlsx" required style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                </div>
+
+                <button type="submit" class="add-to-cart-btn" style="margin-top: 20px;">
+                    <i class="fas fa-check-circle"></i> بدء الاستيراد
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; text-align: center;">
+        <a href="/" style="font-weight: bold; color: var(--amwaj-text-dark); opacity: 0.7;">
+            <i class="fas fa-home"></i> العودة للمتجر
+        </a>
+    </div>
+</div>
+
+<style>
+    .dashboard-card {
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card span {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+</style>

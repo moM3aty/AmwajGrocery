@@ -1,0 +1,103 @@
+﻿@model AmwajGrocery.Models.Product
+@{
+    ViewData["Title"] = Model.Id == 0 ? "إضافة منتج" : "تعديل منتج";
+    var categories = ViewBag.Categories as List<AmwajGrocery.Models.Category>;
+}
+
+<div class="container" style="padding-top: 40px; max-width: 850px;">
+    <div class="admin-form-card">
+
+        <div class="admin-form-header">
+            <h2>
+                <i class="fas @(Model.Id == 0 ? "fa-plus-circle" : "fa-edit")"></i>
+                @(Model.Id == 0 ? "إضافة منتج جديد" : "تعديل بيانات المنتج")
+            </h2>
+        </div>
+
+        <!-- التعديل هنا: استخدام asp-action و asp-controller -->
+        <form asp-action="SaveProduct" asp-controller="Admin" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="ImageUrl" value="@Model.ImageUrl" />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">الاسم بالعربي</label>
+                    <input type="text" name="NameAr" value="@Model.NameAr" required class="form-input" placeholder="مثال: حليب المراعي" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الاسم بالانجليزي</label>
+                    <input type="text" name="NameEn" value="@Model.NameEn" required class="form-input" placeholder="Ex: Almarai Milk" style="direction: ltr;" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">وصف المنتج</label>
+                    <textarea name="Description" class="form-input" placeholder="أضف تفاصيل المنتج هنا...">@Model.Description</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">السعر الحالي (ر.ع)</label>
+                    <input type="number" step="0.001" name="Price" value="@Model.Price" required class="form-input" placeholder="0.000" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">السعر القديم (قبل الخصم)</label>
+                    <input type="number" step="0.001" name="OldPrice" value="@Model.OldPrice" class="form-input" placeholder="اختياري" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">الفئة</label>
+                    <select name="CategoryId" required class="form-input">
+                        <option value="">-- اختر التصنيف --</option>
+                        @if (categories != null)
+                        {
+                            foreach (var cat in categories)
+                            {
+                                <option value="@cat.Id" selected="@(Model.CategoryId == cat.Id ? "selected" : null)">
+                                    @cat.NameAr / @cat.NameEn
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">صورة المنتج</label>
+                    <input type="file" name="ImageFile" class="form-input" accept="image/*" />
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div style="margin-top: 10px;">
+                            <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))" style="width: 60px; height: 60px; object-fit: contain; background:#eee; border-radius:5px;" />
+                        </div>
+                    }
+                </div>
+
+                <!-- خيارات التفعيل -->
+                <div class="form-group full-width" style="display: flex; gap: 20px; flex-wrap: wrap;">
+
+                    <label class="toggle-switch" for="InStock">
+                        <input type="checkbox" id="InStock" name="InStock" value="true" class="toggle-input" @(Model.InStock ? "checked" : "") />
+                        <input type="hidden" name="InStock" value="false" />
+                        <span style="font-weight: bold;">متوفر في المخزون</span>
+                    </label>
+
+                    <label class="toggle-switch" for="IsHotDeal">
+                        <input type="checkbox" id="IsHotDeal" name="IsHotDeal" value="true" class="toggle-input" @(Model.IsHotDeal ? "checked" : "") />
+                        <input type="hidden" name="IsHotDeal" value="false" />
+                        <span style="font-weight: bold;">عرض خاص (Hot Deal)</span>
+                    </label>
+
+                    <label class="toggle-switch" for="IsBestSeller">
+                        <input type="checkbox" id="IsBestSeller" name="IsBestSeller" value="true" class="toggle-input" @(Model.IsBestSeller ? "checked" : "") />
+                        <input type="hidden" name="IsBestSeller" value="false" />
+                        <span style="font-weight: bold;">الأكثر مبيعاً (Best Seller)</span>
+                    </label>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">حفظ البيانات</button>
+                <a href="/Admin/Products" class="btn-cancel">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>
