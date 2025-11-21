@@ -19,7 +19,6 @@ namespace AmwajGrocery.Models
         [Column(TypeName = "decimal(18,3)")]
         public decimal Price { get; set; }
 
-        // هذا هو originalPrice
         [Column(TypeName = "decimal(18,3)")]
         public decimal? OldPrice { get; set; }
 
@@ -27,10 +26,8 @@ namespace AmwajGrocery.Models
 
         public bool InStock { get; set; } = true;
 
-        // هذا هو bestSeller
         public bool IsBestSeller { get; set; }
 
-        // تمت الإضافة: hotDeal
         public bool IsHotDeal { get; set; }
 
         public int CategoryId { get; set; }

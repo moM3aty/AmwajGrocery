@@ -3,15 +3,13 @@
 @{
     ViewData["Title"] = "إدارة الطلبات";
 
-    // حسابات للإحصائيات
-    var totalOrders = Model.Count();
-    var pendingOrders = Model.Count(o => o.Status == OrderStatus.NotResponded);
-    var totalRevenue = Model.Where(o => o.Status != OrderStatus.Cancelled).Sum(o => o.TotalAmount);
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    string searchTerm = ViewBag.SearchTerm;
 }
 
 <div class="container" style="padding-top: 40px;">
 
-    <!-- Header -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <div>
             <h2 style="margin-bottom: 5px; border: none;">📦 إدارة الطلبات</h2>
@@ -22,32 +20,16 @@
         </a>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="icon" style="background: #e0f2f1; color: var(--amwaj-primary);"><i class="fas fa-receipt"></i></div>
-            <div class="info">
-                <h4>@totalOrders</h4>
-                <p>إجمالي الطلبات</p>
-            </div>
+    <form method="get" action="/Admin/Orders" style="margin-bottom: 20px;">
+        <div style="position: relative; max-width: 400px;">
+            <input type="text" name="search" value="@searchTerm" placeholder="بحث برقم الطلب..."
+                   style="width: 100%; padding: 10px 40px 10px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none;">
+            <button type="submit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--amwaj-primary);">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
-        <div class="stat-card">
-            <div class="icon" style="background: #fff3e0; color: var(--amwaj-accent);"><i class="fas fa-clock"></i></div>
-            <div class="info">
-                <h4>@pendingOrders</h4>
-                <p>قيد الانتظار</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="icon" style="background: #e8f5e9; color: var(--amwaj-green);"><i class="fas fa-money-bill-wave"></i></div>
-            <div class="info">
-                <h4>@totalRevenue.ToString("F3")</h4>
-                <p>إجمالي الإيرادات (ر.ع)</p>
-            </div>
-        </div>
-    </div>
+    </form>
 
-    <!-- Orders Table -->
     <div class="table-container">
         <table class="orders-table">
             <thead>
@@ -63,16 +45,20 @@
             <tbody>
                 @foreach (var order in Model)
                 {
-                    <tr class="order-row">
-                        <td style="font-weight: bold; color: var(--amwaj-secondary);">#@order.Id</td>
+                    string rowColor = "";
+                    if (order.Status == OrderStatus.NotResponded) rowColor = "border-right: 5px solid orange;";
+                    if (order.Status == OrderStatus.Paid) rowColor = "border-right: 5px solid green;";
+                    if (order.Status == OrderStatus.Cancelled) rowColor = "border-right: 5px solid red;";
+                    if (order.Status == OrderStatus.Blacklist) rowColor = "border-right: 5px solid black; background-color: #f0f0f0;";
 
+                    <tr class="order-row" style="@rowColor">
+                        <td style="font-weight: bold; color: var(--amwaj-secondary);">#@order.Id</td>
                         <td>
                             <div style="display: flex; flex-direction: column;">
                                 <span style="font-weight: bold;">@order.OrderDate.ToString("yyyy/MM/dd")</span>
                                 <span style="font-size: 0.85em; color: #999;">@order.OrderDate.ToString("hh:mm tt")</span>
                             </div>
                         </td>
-
                         <td style="max-width: 300px;">
                             <div class="order-items-list">
                                 @foreach (var item in order.OrderItems)
@@ -81,11 +67,9 @@
                                 }
                             </div>
                         </td>
-
                         <td style="font-weight: 900; color: var(--amwaj-text-dark);">
                             @order.TotalAmount.ToString("F3") ر.ع
                         </td>
-
                         <td>
                             <form action="/Admin/UpdateOrderStatus" method="post" class="status-form">
                                 <input type="hidden" name="id" value="@order.Id" />
@@ -97,7 +81,6 @@
                                 </select>
                             </form>
                         </td>
-
                         <td style="text-align: center;">
                             <form action="/Admin/DeleteOrder" method="post" onsubmit="return confirm('هل أنت متأكد من حذف هذا الطلب نهائياً؟');" style="display: inline-block;">
                                 <input type="hidden" name="id" value="@order.Id" />
@@ -114,6 +97,54 @@
             </tbody>
         </table>
     </div>
+
+    @if (totalPages > 1)
+    {
+        <div style="margin-top: 20px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap;">
+            @if (currentPage > 1)
+            {
+                <a href="/Admin/Orders?page=@(currentPage - 1)&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">&laquo; السابق</a>
+            }
+
+            @{
+                int startPage = Math.Max(1, currentPage - 2);
+                int endPage = Math.Min(totalPages, currentPage + 2);
+
+                if (startPage > 1)
+                {
+                    <a href="/Admin/Orders?page=1&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">1</a>
+                    if (startPage > 2)
+                    {
+
+                        <span style="padding: 8px;">...</span>
+                    }
+                }
+
+                for (int i = startPage; i <= endPage; i++)
+                {
+                    <a href="/Admin/Orders?page=@i&search=@searchTerm"
+                       style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; @(i == currentPage ? "background: var(--amwaj-primary); color: white; border-color: var(--amwaj-primary);" : "background: white;")">
+                        @i
+                    </a>
+                }
+
+                if (endPage < totalPages)
+                {
+                    if (endPage < totalPages - 1)
+                    {
+
+                        <span style="padding: 8px;">...</span>
+                    }
+                    <a href="/Admin/Orders?page=@totalPages&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">@totalPages</a>
+                }
+            }
+
+            @if (currentPage < totalPages)
+            {
+                <a href="/Admin/Orders?page=@(currentPage + 1)&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">التالي &raquo;</a>
+            }
+        </div>
+    }
 </div>
 
 @functions {

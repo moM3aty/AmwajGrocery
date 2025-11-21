@@ -13,7 +13,6 @@
             </h2>
         </div>
 
-        <!-- التعديل هنا: استخدام asp-action و asp-controller -->
         <form asp-action="SaveCategory" asp-controller="Admin" method="post" enctype="multipart/form-data">
             <input type="hidden" name="Id" value="@Model.Id" />
             <input type="hidden" name="ImageUrl" value="@Model.ImageUrl" />
@@ -30,7 +29,6 @@
                     <input type="text" name="NameEn" value="@Model.NameEn" required class="form-input" placeholder="Ex: Dairy & Cheese" style="direction: ltr;" />
                 </div>
 
-                <!-- حقل رفع صورة الفئة -->
                 <div class="form-group">
                     <label class="form-label">صورة الفئة</label>
                     <input type="file" name="ImageFile" class="form-input" accept="image/*" />

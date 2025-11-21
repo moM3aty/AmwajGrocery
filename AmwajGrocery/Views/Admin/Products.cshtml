@@ -2,6 +2,10 @@
 @{
     ViewData["Title"] = "إدارة المنتجات";
     var defaultImage = "/images/logo-removebg-preview (3).png";
+
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    string searchTerm = ViewBag.SearchTerm;
 }
 
 <div class="container" style="padding-top: 40px;">
@@ -11,6 +15,16 @@
             <i class="fas fa-plus"></i> إضافة منتج جديد
         </a>
     </div>
+
+    <form method="get" action="/Admin/Products" style="margin-bottom: 20px;">
+        <div style="position: relative; max-width: 400px;">
+            <input type="text" name="search" value="@searchTerm" placeholder="ابحث باسم المنتج..."
+                   style="width: 100%; padding: 10px 40px 10px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none;">
+            <button type="submit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--amwaj-primary);">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </form>
 
     <div style="overflow-x: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
         <table class="admin-table" style="width: 100%; border-collapse: collapse; min-width: 600px;">
@@ -30,7 +44,6 @@
                     <tr style="border-bottom: 1px solid #eee;">
                         <td style="padding: 10px;">
                             <img src="@GetImageSrc(item.ImageUrl)" style="width: 60px; height: 60px; object-fit: contain; border-radius: 5px; background:#f9f9f9; border:1px solid #eee; padding: 5px;"
-                                 referrerpolicy="no-referrer"
                                  onerror="this.src='@defaultImage'">
                         </td>
                         <td style="padding: 10px; font-weight: bold;">@item.NameAr</td>
@@ -58,6 +71,54 @@
             </tbody>
         </table>
     </div>
+
+    @if (totalPages > 1)
+    {
+        <div style="margin-top: 20px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap;">
+            @if (currentPage > 1)
+            {
+                <a href="/Admin/Products?page=@(currentPage - 1)&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">&laquo; السابق</a>
+            }
+
+            @{
+                int startPage = Math.Max(1, currentPage - 2);
+                int endPage = Math.Min(totalPages, currentPage + 2);
+
+                if (startPage > 1)
+                {
+                    <a href="/Admin/Products?page=1&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">1</a>
+                    if (startPage > 2)
+                    {
+
+                        <span style="padding: 8px;">...</span>
+                    }
+                }
+
+                for (int i = startPage; i <= endPage; i++)
+                {
+                    <a href="/Admin/Products?page=@i&search=@searchTerm"
+                       style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; @(i == currentPage ? "background: var(--amwaj-primary); color: white; border-color: var(--amwaj-primary);" : "background: white;")">
+                        @i
+                    </a>
+                }
+
+                if (endPage < totalPages)
+                {
+                    if (endPage < totalPages - 1)
+                    {
+
+                        <span style="padding: 8px;">...</span>
+                    }
+                    <a href="/Admin/Products?page=@totalPages&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">@totalPages</a>
+                }
+            }
+
+            @if (currentPage < totalPages)
+            {
+                <a href="/Admin/Products?page=@(currentPage + 1)&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">التالي &raquo;</a>
+            }
+        </div>
+    }
 
     <div style="margin-top: 20px;">
         <a href="/Admin/Dashboard" style="color: var(--amwaj-secondary);">عودة للوحة التحكم</a>

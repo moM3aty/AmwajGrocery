@@ -21,7 +21,6 @@ namespace AmwajGrocery.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        // --- تسجيل الدخول ---
         [HttpGet]
         public IActionResult Login()
         {
@@ -34,11 +33,7 @@ namespace AmwajGrocery.Controllers
         {
             if (username == "admin" && password == "admin123")
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, username),
-                    new Claim(ClaimTypes.Role, "Admin")
-                };
+                var claims = new List<Claim> { new Claim(ClaimTypes.Name, username), new Claim(ClaimTypes.Role, "Admin") };
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                 return RedirectToAction("Dashboard");
@@ -57,13 +52,24 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Login");
         }
 
-        // ==========================================
-        // === إدارة المنتجات ===
-        // ==========================================
         [Authorize]
-        public async Task<IActionResult> Products()
+        public async Task<IActionResult> Products(string search, int page = 1)
         {
-            var products = await _context.Products.Include(p => p.Category).ToListAsync();
+            int pageSize = 10;
+            var query = _context.Products.Include(p => p.Category).AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(p => p.NameAr.Contains(search) || p.NameEn.Contains(search));
+            }
+
+            int totalItems = await query.CountAsync();
+            var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.SearchTerm = search;
+
             return View(products);
         }
 
@@ -82,7 +88,6 @@ namespace AmwajGrocery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveProduct(Product model, IFormFile? ImageFile)
         {
-            // إزالة التحقق من ImageUrl لأنه قد يكون فارغاً عند التعديل
             ModelState.Remove("ImageUrl");
             ModelState.Remove("Category");
 
@@ -90,20 +95,13 @@ namespace AmwajGrocery.Controllers
             {
                 if (model.Id == 0)
                 {
-                    // --- إضافة منتج جديد ---
-                    if (ImageFile != null && ImageFile.Length > 0)
-                    {
-                        model.ImageUrl = await SaveImage(ImageFile);
-                    }
+                    if (ImageFile != null && ImageFile.Length > 0) model.ImageUrl = await SaveImage(ImageFile);
                     _context.Products.Add(model);
                 }
                 else
                 {
-                    // --- تعديل منتج موجود ---
                     var existingProduct = await _context.Products.FindAsync(model.Id);
                     if (existingProduct == null) return NotFound();
-
-                    // تحديث البيانات
                     existingProduct.NameAr = model.NameAr;
                     existingProduct.NameEn = model.NameEn;
                     existingProduct.Description = model.Description;
@@ -113,20 +111,12 @@ namespace AmwajGrocery.Controllers
                     existingProduct.InStock = model.InStock;
                     existingProduct.IsHotDeal = model.IsHotDeal;
                     existingProduct.IsBestSeller = model.IsBestSeller;
-
-                    // تحديث الصورة فقط إذا تم رفع صورة جديدة
-                    if (ImageFile != null && ImageFile.Length > 0)
-                    {
-                        existingProduct.ImageUrl = await SaveImage(ImageFile);
-                    }
-
+                    if (ImageFile != null && ImageFile.Length > 0) existingProduct.ImageUrl = await SaveImage(ImageFile);
                     _context.Products.Update(existingProduct);
                 }
-
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Products");
             }
-
             ViewBag.Categories = await _context.Categories.ToListAsync();
             return View("ProductForm", model);
         }
@@ -140,13 +130,25 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Products");
         }
 
-        // ==========================================
-        // === إدارة الفئات (تم الإصلاح) ===
-        // ==========================================
+
         [Authorize]
-        public async Task<IActionResult> Categories()
+        public async Task<IActionResult> Categories(string search, int page = 1)
         {
-            var categories = await _context.Categories.Include(c => c.Products).ToListAsync();
+            int pageSize = 10;
+            var query = _context.Categories.Include(c => c.Products).AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(c => c.NameAr.Contains(search) || c.NameEn.Contains(search));
+            }
+
+            int totalItems = await query.CountAsync();
+            var categories = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.SearchTerm = search;
+
             return View(categories);
         }
 
@@ -171,30 +173,18 @@ namespace AmwajGrocery.Controllers
             {
                 if (model.Id == 0)
                 {
-                    // إضافة جديد
-                    if (ImageFile != null && ImageFile.Length > 0)
-                    {
-                        model.ImageUrl = await SaveImage(ImageFile);
-                    }
+                    if (ImageFile != null && ImageFile.Length > 0) model.ImageUrl = await SaveImage(ImageFile);
                     _context.Categories.Add(model);
                 }
                 else
                 {
-                    // تعديل موجود (الطريقة الصحيحة)
                     var existingCategory = await _context.Categories.FindAsync(model.Id);
                     if (existingCategory == null) return NotFound();
-
                     existingCategory.NameAr = model.NameAr;
-                    existingCategory.NameEn = model.NameEn; // هذا السطر يضمن حفظ الاسم الإنجليزي
-
-                    if (ImageFile != null && ImageFile.Length > 0)
-                    {
-                        existingCategory.ImageUrl = await SaveImage(ImageFile);
-                    }
-
+                    existingCategory.NameEn = model.NameEn;
+                    if (ImageFile != null && ImageFile.Length > 0) existingCategory.ImageUrl = await SaveImage(ImageFile);
                     _context.Categories.Update(existingCategory);
                 }
-
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Categories");
             }
@@ -210,30 +200,38 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Categories");
         }
 
-        // --- دالة مساعدة لحفظ الصور ---
+        [Authorize]
+        public async Task<IActionResult> Orders(string search, int page = 1)
+        {
+            int pageSize = 10;
+            var query = _context.Orders.Include(o => o.OrderItems).OrderByDescending(o => o.OrderDate).AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(o => o.Id.ToString().Contains(search));
+            }
+
+            int totalItems = await query.CountAsync();
+            var orders = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.SearchTerm = search;
+
+            return View(orders);
+        }
+
         private async Task<string> SaveImage(IFormFile imageFile)
         {
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
             string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await imageFile.CopyToAsync(fileStream);
             }
             return "images/" + uniqueFileName;
-        }
-
-        // ==========================================
-        // === إدارة الطلبات ===
-        // ==========================================
-        [Authorize]
-        public async Task<IActionResult> Orders()
-        {
-            var orders = await _context.Orders.Include(o => o.OrderItems).OrderByDescending(o => o.OrderDate).ToListAsync();
-            return View(orders);
         }
 
         [HttpPost]
@@ -275,9 +273,6 @@ namespace AmwajGrocery.Controllers
             return Ok(new { orderId = newOrder.Id });
         }
 
-        // ==========================================
-        // === استيراد الإكسل ===
-        // ==========================================
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> ImportExcel(IFormFile file)
@@ -295,7 +290,6 @@ namespace AmwajGrocery.Controllers
                     {
                         var categoryName = worksheet.Cells[row, 6].Value?.ToString()?.Trim();
                         if (string.IsNullOrEmpty(categoryName)) continue;
-
                         var category = await _context.Categories.FirstOrDefaultAsync(c => c.NameAr == categoryName);
                         if (category == null)
                         {
@@ -303,7 +297,6 @@ namespace AmwajGrocery.Controllers
                             _context.Categories.Add(category);
                             await _context.SaveChangesAsync();
                         }
-
                         var product = new Product
                         {
                             NameAr = worksheet.Cells[row, 2].Value?.ToString()?.Trim(),
@@ -324,8 +317,6 @@ namespace AmwajGrocery.Controllers
             }
             return RedirectToAction("Dashboard");
         }
-
-        // DTOs
         public class OrderDto { public decimal TotalAmount { get; set; } public List<OrderItemDto> Items { get; set; } }
         public class OrderItemDto { public string Name { get; set; } public int Qty { get; set; } public decimal Price { get; set; } }
     }

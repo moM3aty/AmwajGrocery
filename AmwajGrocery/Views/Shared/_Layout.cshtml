@@ -2,12 +2,11 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 
 @{
-    // الطريقة الصحيحة لقراءة اللغة الحالية من النظام
     var currentCulture = CultureInfo.CurrentUICulture.Name;
     var isAr = currentCulture.StartsWith("ar");
     var dir = isAr ? "rtl" : "ltr";
     var langCode = isAr ? "ar" : "en";
-    var targetLang = isAr ? "en" : "ar"; // اللغة التي سيتم التحويل إليها
+    var targetLang = isAr ? "en" : "ar"; 
 }
 
 <!DOCTYPE html>

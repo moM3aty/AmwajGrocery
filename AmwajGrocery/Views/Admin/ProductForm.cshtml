@@ -14,7 +14,6 @@
             </h2>
         </div>
 
-        <!-- التعديل هنا: استخدام asp-action و asp-controller -->
         <form asp-action="SaveProduct" asp-controller="Admin" method="post" enctype="multipart/form-data">
             <input type="hidden" name="Id" value="@Model.Id" />
             <input type="hidden" name="ImageUrl" value="@Model.ImageUrl" />
@@ -36,11 +35,15 @@
 
                 <div class="form-group">
                     <label class="form-label">السعر الحالي (ر.ع)</label>
-                    <input type="number" step="0.001" name="Price" value="@Model.Price" required class="form-input" placeholder="0.000" />
+                    <input type="number" step="0.001" name="Price"
+                           value="@(Model.Id == 0 ? "" : Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                           required class="form-input" placeholder="0.000" />
                 </div>
                 <div class="form-group">
                     <label class="form-label">السعر القديم (قبل الخصم)</label>
-                    <input type="number" step="0.001" name="OldPrice" value="@Model.OldPrice" class="form-input" placeholder="اختياري" />
+                    <input type="number" step="0.001" name="OldPrice"
+                           value="@(Model.OldPrice.HasValue? Model.OldPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")"
+                           class="form-input" placeholder="اختياري" />
                 </div>
 
                 <div class="form-group">
@@ -65,13 +68,15 @@
                     @if (!string.IsNullOrEmpty(Model.ImageUrl))
                     {
                         <div style="margin-top: 10px;">
-                            <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))" style="width: 60px; height: 60px; object-fit: contain; background:#eee; border-radius:5px;" />
+                            <span style="font-size: 0.8em; color: #777;">الصورة الحالية:</span><br>
+                            <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))"
+                                 style="width: 80px; height: 80px; object-fit: contain; background:#f9f9f9; border: 1px solid #eee; border-radius:5px;"
+                                 onerror="this.src='/images/placeholder.png'" />
                         </div>
                     }
                 </div>
 
-                <!-- خيارات التفعيل -->
-                <div class="form-group full-width" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div class="form-group full-width" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
 
                     <label class="toggle-switch" for="InStock">
                         <input type="checkbox" id="InStock" name="InStock" value="true" class="toggle-input" @(Model.InStock ? "checked" : "") />

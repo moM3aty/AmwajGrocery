@@ -12,7 +12,6 @@ namespace AmwajGrocery.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
 
-        // الجداول الجديدة
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
 

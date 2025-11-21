@@ -62,8 +62,8 @@ namespace AmwajGrocery.Controllers
                 .Where(p => p.NameAr.Contains(q) || p.NameEn.Contains(q))
                 .Select(p => new {
                     id = p.Id,
-                    name = p.NameAr,   // الاسم العربي
-                    nameEn = p.NameEn, // الاسم الانجليزي
+                    name = p.NameAr,   
+                    nameEn = p.NameEn,
                     price = p.Price,
                     image = p.ImageUrl
                 })

@@ -1,5 +1,11 @@
 wwwroot\css\style.css
 wwwroot\favicon.ico
+wwwroot\images\2be4ac78-f151-4d03-b5b0-36793e061d1b_logo.png
+wwwroot\images\3b49ac0e-d4f3-4567-854e-35e318086162_1.webp
+wwwroot\images\6fd199c6-d9cc-458a-a5d9-a36087c5952f_logo.png
+wwwroot\images\950175ab-9da8-425e-ba79-d8690b21e6eb_done.png
+wwwroot\images\bf10e7e6-5832-4fe7-8cec-67b13d17aead_logo.png
+wwwroot\images\f55b5135-5775-4fac-8522-7660faf14136_logo.png
 wwwroot\images\logo-removebg-preview (3).png
 wwwroot\images\logo.jpeg
 wwwroot\images\البان.webp

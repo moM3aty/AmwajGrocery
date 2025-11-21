@@ -6,10 +6,8 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// إضافة خدمة الوصول لبيانات HTTP
 builder.Services.AddHttpContextAccessor();
 
-// إضافة خدمات الترجمة
 builder.Services.AddLocalization();
 
 builder.Services.AddControllersWithViews();
@@ -26,7 +24,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
-// --- إعدادات اللغة (عربي كافتراضي) ---
 var supportedCultures = new[] { new CultureInfo("ar"), new CultureInfo("en") };
 var localizationOptions = new RequestLocalizationOptions
 {
@@ -35,7 +32,6 @@ var localizationOptions = new RequestLocalizationOptions
     SupportedUICultures = supportedCultures
 };
 app.UseRequestLocalization(localizationOptions);
-// -------------------------------------
 
 if (!app.Environment.IsDevelopment())
 {

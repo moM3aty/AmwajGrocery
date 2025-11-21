@@ -1,9 +1,5 @@
-﻿// =========================================
-// 1. إدارة السلة (Cart Logic)
-// =========================================
-let cart = {};
+﻿let cart = {};
 
-// تحميل السلة من التخزين المحلي عند فتح الموقع
 if (localStorage.getItem('amwaj_cart')) {
     try {
         cart = JSON.parse(localStorage.getItem('amwaj_cart'));
@@ -38,8 +34,7 @@ function addToCart(id, name, price) {
     saveCart();
     const msg = isArabic ? `تم إضافة ${qty} من ${name} للسلة` : `Added ${qty} of ${name} to cart`;
     showToast(msg);
-
-    // إعادة تعيين العداد لـ 1
+    
     if (qtyDisplay) qtyDisplay.textContent = 1;
 }
 
@@ -52,12 +47,10 @@ function updateCartUI() {
 function removeFromCart(id) {
     delete cart[id];
     saveCart();
-    openCartModal(); // تحديث عرض السلة
+    openCartModal(); 
 }
 
-// =========================================
-// 2. نافذة السلة (Cart Modal)
-// =========================================
+
 function openCartModal() {
     const modal = document.getElementById('cart-modal');
     const container = document.getElementById('cart-items-container');
@@ -98,22 +91,18 @@ function openCartModal() {
 }
 
 function closeCartModal(e) {
-    // يغلق عند الضغط على الخلفية أو زر الإغلاق
     if (e === null || e.target.id === 'cart-modal') {
         document.getElementById('cart-modal').style.display = 'none';
     }
 }
 
-// =========================================
-// 3. إرسال الطلب (API + WhatsApp)
-// =========================================
+
 async function sendOrderToWhatsApp() {
     if (Object.keys(cart).length === 0) {
         showToast(isArabic ? "السلة فارغة!" : "Cart is empty!");
         return;
     }
 
-    // 1. تجهيز البيانات
     let orderItems = [];
     let total = 0;
     const currency = isArabic ? 'ر.ع' : 'OMR';
@@ -133,14 +122,12 @@ async function sendOrderToWhatsApp() {
         items: orderItems
     };
 
-    // تغيير حالة الزر أثناء التحميل
     const btn = document.querySelector('.cart-footer .add-to-cart-btn');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
     btn.disabled = true;
 
     try {
-        // 2. إرسال للسيرفر للحفظ في قاعدة البيانات
         const response = await fetch('/Admin/CreateOrder', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -151,23 +138,23 @@ async function sendOrderToWhatsApp() {
             const result = await response.json();
             const orderId = result.orderId;
 
-            // 3. فتح الواتساب بالرسالة المنسقة
-            // ملاحظة: الرسالة باللغة العربية دائماً حسب طلبك المبدئي لتكون موحدة لصاحب المتجر
-            let message = `✨ *طلب جديد #${orderId}* ✨%0a تكرما أرجو تجهيز الطلب الآتي 🛒%0a%0a🧾 *تفاصيل الطلب:*%0a`;
+            
+            let message = `✨ *طلب جديد #${orderId}* ✨\n تكرما أرجو تجهيز الطلب الآتي 🛒\n\n🧾 *تفاصيل الطلب:*\n`;
 
             for (let id in cart) {
                 let item = cart[id];
                 let itemTotal = item.price * item.qty;
-                message += `🔹 ${item.name}%0a   الكمية: ${item.qty}%0a   السعر: ${item.price.toFixed(3)} ر.ع%0a   المجموع: ${itemTotal.toFixed(3)} ر.ع%0a%0a`;
+                let curr = isArabic ? 'ر.ع' : 'OMR';
+                message += `🔹 ${item.name}\n   الكمية: ${item.qty}\n   السعر: ${item.price.toFixed(3)} ${curr}\n   المجموع: ${itemTotal.toFixed(3)} ${curr}\n\n`;
             }
 
-            message += `💰 *المجموع الإجمالي: ${total.toFixed(3)} ر.ع*%0a%0a`;
+            message += `💰 *المجموع الإجمالي: ${total.toFixed(3)} ${currency}*\n\n`;
             message += `🙏 شكراً بقالة أمواج صلالة وموعدنا معكم في طلب قادم بإذن الله 💙`;
 
             const phone = "96896755118";
-            window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${message}`, '_blank');
+            
+            window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`, '_blank');
 
-            // تفريغ السلة
             cart = {};
             saveCart();
             openCartModal();
@@ -185,9 +172,6 @@ async function sendOrderToWhatsApp() {
     }
 }
 
-// =========================================
-// 4. البحث الفوري (Live Search)
-// =========================================
 let searchTimeout;
 function liveSearch(query) {
     clearTimeout(searchTimeout);
@@ -200,7 +184,6 @@ function liveSearch(query) {
         return;
     }
 
-    // Debounce: تأخير الطلب 300ms لتقليل الضغط على السيرفر
     searchTimeout = setTimeout(() => {
         fetch(`/Home/LiveSearch?q=${encodeURIComponent(query)}`)
             .then(response => response.json())
@@ -210,8 +193,6 @@ function liveSearch(query) {
                     data.forEach(item => {
                         const div = document.createElement('div');
                         div.className = 'search-result-item';
-
-                        // معالجة مسار الصورة
                         let imgUrl = item.image;
                         if (!imgUrl) imgUrl = defaultImg;
                         else if (!imgUrl.startsWith('http') && !imgUrl.startsWith('/')) {
@@ -219,9 +200,8 @@ function liveSearch(query) {
                             else imgUrl = '/images/' + imgUrl;
                         }
 
-                        // اختيار الاسم بناءً على اللغة الحالية (isArabic معرف في الـ Layout)
                         let displayName = isArabic ? item.name : item.nameEn;
-                        if (!displayName || displayName.trim() === "") displayName = item.name; // Fallback
+                        if (!displayName || displayName.trim() === "") displayName = item.name;
 
                         div.innerHTML = `
                             <img src="${imgUrl}" alt="${displayName}" onerror="this.src='${defaultImg}'">
@@ -231,7 +211,6 @@ function liveSearch(query) {
                             </div>
                         `;
                         div.onclick = () => {
-                            // الانتقال لصفحة البحث لعرض المنتج
                             window.location.href = `/Home/Products?q=${encodeURIComponent(item.name)}`;
                         };
                         resultsDiv.appendChild(div);
@@ -247,8 +226,7 @@ function liveSearch(query) {
     }, 300);
 }
 
-// إخفاء نتائج البحث عند الضغط خارجها
-document.addEventListener('click', function (e) {
+document.addEventListener('click', function(e) {
     const resultsDiv = document.getElementById('live-search-results');
     const searchInput = document.getElementById('product-search');
     if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
@@ -256,9 +234,7 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// =========================================
-// 5. أدوات مساعدة (Utilities)
-// =========================================
+
 function showToast(msg) {
     const toast = document.getElementById('custom-toast');
     const msgEl = document.getElementById('toast-message');
@@ -271,33 +247,27 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// =========================================
-// 6. حماية السكرين شوت (Screenshot Protection)
-// =========================================
-// منع زر PrintScreen
+
 document.addEventListener('keyup', (e) => {
     if (e.key == 'PrintScreen') {
-        navigator.clipboard.writeText(''); // مسح الحافظة
+        navigator.clipboard.writeText('');
         alert(isArabic ? 'التقاط الشاشة غير مسموح به!' : 'Screenshots are not allowed!');
     }
 });
 
-// منع اختصارات لوحة المفاتيح الشائعة
-document.addEventListener('keydown', function (e) {
-    // Windows: Win+Shift+S, Ctrl+P
-    // Mac: Cmd+Shift+3, Cmd+Shift+4
+document.addEventListener('keydown', function(e) {
+    
     if ((e.ctrlKey && e.key === 'p') ||
         (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4')) ||
         (e.key === 'Meta' && e.shiftKey && e.key === 's')) {
-
+        
         e.preventDefault();
         const overlay = document.getElementById('screenshot-overlay');
-        if (overlay) {
+        if(overlay) {
             overlay.style.display = 'flex';
             setTimeout(() => { overlay.style.display = 'none'; }, 2000);
         }
     }
 });
 
-// منع الكليك يمين (اختياري - يمكن إزالته إذا كان مزعجاً)
 document.addEventListener('contextmenu', event => event.preventDefault());

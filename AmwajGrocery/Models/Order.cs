@@ -45,7 +45,7 @@ namespace AmwajGrocery.Models
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; }
 
-        public string ProductName { get; set; } // نخزن الاسم كنص عشان لو المنتج اتحذف لاحقاً يفضل موجود في الطلب
+        public string ProductName { get; set; } 
 
         public int Quantity { get; set; }
 

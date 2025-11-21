@@ -2,7 +2,6 @@
 @using AmwajGrocery.Models
 @{
     ViewData["Title"] = "الرئيسية";
-    // التحقق من اللغة الحالية
     var isAr = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
 
     var deals = ViewBag.Deals as List<Product>;
@@ -13,7 +12,6 @@
 
 <div class="container" style="padding-top: 20px;">
 
-    <!-- قسم العروض -->
     <section class="page-section">
         <h2 style="color: var(--amwaj-accent); border-bottom: 2px solid var(--amwaj-accent); padding-bottom: 10px;">
             @(isAr ? "عروض وتخفيضات اليوم" : "Today's Deals")
@@ -28,15 +26,14 @@
                             <img src="@GetImageSrc(item.ImageUrl)" alt="@(isAr? item.NameAr: item.NameEn)"
                                  referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
                         </div>
-                        <!-- هنا يتم عرض الاسم حسب اللغة -->
                         <h4>@(isAr? item.NameAr: item.NameEn)</h4>
 
                         <div class="price-section">
                             @if (item.OldPrice.HasValue)
                             {
-                                <p class="original-price">@item.OldPrice.Value.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
+                                <p class="original-price">@item.OldPrice.Value.ToString("F3", CultureInfo.InvariantCulture) @(isAr ? "ر.ع" : "OMR")</p>
                             }
-                            <p class="current-price">@item.Price.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
+                            <p class="current-price">@item.Price.ToString("F3", CultureInfo.InvariantCulture) @(isAr ? "ر.ع" : "OMR")</p>
                         </div>
 
                         <div class="quantity-control">
@@ -45,7 +42,7 @@
                             <button class="qty-btn" onclick="updateQuantity(@item.Id, 'inc')"><i class="fas fa-plus"></i></button>
                         </div>
 
-                        <button class="add-to-cart-btn" onclick="addToCart(@item.Id, '@(isAr? item.NameAr: item.NameEn)', @item.Price)">
+                        <button class="add-to-cart-btn" onclick="addToCart(@item.Id, '@((isAr ? item.NameAr : item.NameEn)?.Replace("'", "\\'"))', @item.Price.ToString(CultureInfo.InvariantCulture))">
                             @(isAr ? "أضف للسلة" : "Add to Cart")
                         </button>
                     </div>
@@ -58,7 +55,6 @@
         </div>
     </section>
 
-    <!-- قسم الفئات -->
     <section class="page-section" style="background-color: #fff; padding: 20px; border-radius: 10px;">
         <h2 style="color: var(--amwaj-text-dark);">@(isAr ? "تسوق حسب الفئة" : "Shop by Category")</h2>
         <div class="category-grid">
@@ -69,7 +65,6 @@
                     <div class="category-card" onclick="location.href='/Home/Products?categoryId=@cat.Id'">
                         <img src="@GetImageSrc(cat.ImageUrl)" alt="@(isAr? cat.NameAr: cat.NameEn)"
                              referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
-                        <!-- هنا يتم عرض اسم الفئة حسب اللغة -->
                         <h4>@(isAr? cat.NameAr: cat.NameEn)</h4>
                         <p style="font-size: 0.8em; color: #777;">
                             (@(cat.Products?.Count() ?? 0) @(isAr ? "منتج" : "Products"))
@@ -80,7 +75,6 @@
         </div>
     </section>
 
-    <!-- قسم الأكثر مبيعاً -->
     <section class="page-section">
         <h2 style="color: var(--amwaj-primary);">@(isAr ? "الأكثر مبيعاً" : "Best Sellers")</h2>
         <div class="product-grid">
@@ -95,9 +89,9 @@
                         </div>
                         <h4>@(isAr? item.NameAr: item.NameEn)</h4>
                         <div class="price-section">
-                            <p class="current-price">@item.Price.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
+                            <p class="current-price">@item.Price.ToString("F3", CultureInfo.InvariantCulture) @(isAr ? "ر.ع" : "OMR")</p>
                         </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(@item.Id, '@(isAr? item.NameAr: item.NameEn)', @item.Price)">
+                        <button class="add-to-cart-btn" onclick="addToCart(@item.Id, '@((isAr ? item.NameAr : item.NameEn)?.Replace("'", "\\'"))', @item.Price.ToString(CultureInfo.InvariantCulture))">
                             @(isAr ? "أضف للسلة" : "Add to Cart")
                         </button>
                     </div>
