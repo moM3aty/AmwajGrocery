@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="~/css/style.css?v=3.1">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00BFB3">
+    <link rel="apple-touch-icon" href="/images/logo-removebg-preview (3).png">
 </head>
 <body>
     <div id="screenshot-overlay">
@@ -64,7 +67,10 @@
                 </div>
 
                 <div class="header-actions-group">
-                    <!-- زر تغيير اللغة -->
+                    <button id="pwa-install-btn" class="lang-btn" style="display: none; border-color: var(--amwaj-primary); color: var(--amwaj-primary);">
+                        <i class="fas fa-download"></i> @(isAr ? "تثبيت التطبيق" : "Install App")
+                    </button>
+
                     <form action="/Home/ChangeLanguage" method="post" style="display:inline;">
                         <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                         <input type="hidden" name="culture" value="@targetLang" />
@@ -128,6 +134,14 @@
 
     <script>
         var isArabic = @(isAr.ToString().ToLower());
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered!', reg))
+                    .catch(err => console.log('Service Worker registration failed', err));
+            });
+        }
     </script>
     <script src="~/js/main.js?v=3.1"></script>
     @await RenderSectionAsync("Scripts", required: false)

@@ -15,6 +15,8 @@ namespace AmwajGrocery.Models
         public string NameEn { get; set; }
 
         public string Description { get; set; }
+        public string? DescriptionEn { get; set; }
+
 
         [Column(TypeName = "decimal(18,3)")]
         public decimal Price { get; set; }

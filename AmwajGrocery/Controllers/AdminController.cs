@@ -83,43 +83,7 @@ namespace AmwajGrocery.Controllers
             return View(product);
         }
 
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveProduct(Product model, IFormFile? ImageFile)
-        {
-            ModelState.Remove("ImageUrl");
-            ModelState.Remove("Category");
 
-            if (ModelState.IsValid)
-            {
-                if (model.Id == 0)
-                {
-                    if (ImageFile != null && ImageFile.Length > 0) model.ImageUrl = await SaveImage(ImageFile);
-                    _context.Products.Add(model);
-                }
-                else
-                {
-                    var existingProduct = await _context.Products.FindAsync(model.Id);
-                    if (existingProduct == null) return NotFound();
-                    existingProduct.NameAr = model.NameAr;
-                    existingProduct.NameEn = model.NameEn;
-                    existingProduct.Description = model.Description;
-                    existingProduct.Price = model.Price;
-                    existingProduct.OldPrice = model.OldPrice;
-                    existingProduct.CategoryId = model.CategoryId;
-                    existingProduct.InStock = model.InStock;
-                    existingProduct.IsHotDeal = model.IsHotDeal;
-                    existingProduct.IsBestSeller = model.IsBestSeller;
-                    if (ImageFile != null && ImageFile.Length > 0) existingProduct.ImageUrl = await SaveImage(ImageFile);
-                    _context.Products.Update(existingProduct);
-                }
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Products");
-            }
-            ViewBag.Categories = await _context.Categories.ToListAsync();
-            return View("ProductForm", model);
-        }
 
         [HttpPost]
         [Authorize]
@@ -275,6 +239,47 @@ namespace AmwajGrocery.Controllers
 
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveProduct(Product model, IFormFile? ImageFile)
+        {
+            ModelState.Remove("ImageUrl");
+            ModelState.Remove("Category");
+
+            if (ModelState.IsValid)
+            {
+                if (model.Id == 0)
+                {
+                    if (ImageFile != null && ImageFile.Length > 0) model.ImageUrl = await SaveImage(ImageFile);
+                    _context.Products.Add(model);
+                }
+                else
+                {
+                    var existingProduct = await _context.Products.FindAsync(model.Id);
+                    if (existingProduct == null) return NotFound();
+
+                    existingProduct.NameAr = model.NameAr;
+                    existingProduct.NameEn = model.NameEn;
+                    existingProduct.Description = model.Description; 
+                    existingProduct.DescriptionEn = model.DescriptionEn;
+                    existingProduct.Price = model.Price;
+                    existingProduct.OldPrice = model.OldPrice;
+                    existingProduct.CategoryId = model.CategoryId;
+                    existingProduct.InStock = model.InStock;
+                    existingProduct.IsHotDeal = model.IsHotDeal;
+                    existingProduct.IsBestSeller = model.IsBestSeller;
+
+                    if (ImageFile != null && ImageFile.Length > 0) existingProduct.ImageUrl = await SaveImage(ImageFile);
+                    _context.Products.Update(existingProduct);
+                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products");
+            }
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            return View("ProductForm", model);
+        }
+
+        [HttpPost]
+        [Authorize]
         public async Task<IActionResult> ImportExcel(IFormFile file)
         {
             if (file == null || file.Length == 0) return BadRequest("يرجى رفع ملف.");
@@ -290,6 +295,7 @@ namespace AmwajGrocery.Controllers
                     {
                         var categoryName = worksheet.Cells[row, 6].Value?.ToString()?.Trim();
                         if (string.IsNullOrEmpty(categoryName)) continue;
+
                         var category = await _context.Categories.FirstOrDefaultAsync(c => c.NameAr == categoryName);
                         if (category == null)
                         {
@@ -297,18 +303,21 @@ namespace AmwajGrocery.Controllers
                             _context.Categories.Add(category);
                             await _context.SaveChangesAsync();
                         }
+
                         var product = new Product
                         {
                             NameAr = worksheet.Cells[row, 2].Value?.ToString()?.Trim(),
                             NameEn = worksheet.Cells[row, 3].Value?.ToString()?.Trim(),
-                            Description = worksheet.Cells[row, 4].Value?.ToString()?.Trim(),
+                            Description = worksheet.Cells[row, 4].Value?.ToString()?.Trim(), 
                             Price = Convert.ToDecimal(worksheet.Cells[row, 5].Value),
                             CategoryId = category.Id,
                             ImageUrl = worksheet.Cells[row, 7].Value?.ToString()?.Trim(),
                             InStock = worksheet.Cells[row, 8].Value?.ToString()?.ToLower()?.Trim() == "true",
                             OldPrice = worksheet.Cells[row, 9].Value != null ? Convert.ToDecimal(worksheet.Cells[row, 9].Value) : null,
                             IsBestSeller = worksheet.Cells[row, 10].Value?.ToString()?.ToLower()?.Trim() == "true",
-                            IsHotDeal = worksheet.Cells[row, 11].Value?.ToString()?.ToLower()?.Trim() == "true"
+                            IsHotDeal = worksheet.Cells[row, 11].Value?.ToString()?.ToLower()?.Trim() == "true",
+
+                            DescriptionEn = worksheet.Cells[row, 12].Value?.ToString()?.Trim()
                         };
                         _context.Products.Add(product);
                     }

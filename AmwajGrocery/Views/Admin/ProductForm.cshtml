@@ -28,9 +28,16 @@
                     <input type="text" name="NameEn" value="@Model.NameEn" required class="form-input" placeholder="Ex: Almarai Milk" style="direction: ltr;" />
                 </div>
 
-                <div class="form-group full-width">
-                    <label class="form-label">وصف المنتج</label>
-                    <textarea name="Description" class="form-input" placeholder="أضف تفاصيل المنتج هنا...">@Model.Description</textarea>
+                <!-- الوصف العربي -->
+                <div class="form-group">
+                    <label class="form-label">وصف المنتج (عربي)</label>
+                    <textarea name="Description" class="form-input" placeholder="تفاصيل المنتج بالعربية...">@Model.Description</textarea>
+                </div>
+
+                <!-- الوصف الإنجليزي (الجديد) -->
+                <div class="form-group">
+                    <label class="form-label">وصف المنتج (إنجليزي)</label>
+                    <textarea name="DescriptionEn" class="form-input" style="direction: ltr;" placeholder="Product details in English...">@Model.DescriptionEn</textarea>
                 </div>
 
                 <div class="form-group">
@@ -68,7 +75,6 @@
                     @if (!string.IsNullOrEmpty(Model.ImageUrl))
                     {
                         <div style="margin-top: 10px;">
-                            <span style="font-size: 0.8em; color: #777;">الصورة الحالية:</span><br>
                             <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))"
                                  style="width: 80px; height: 80px; object-fit: contain; background:#f9f9f9; border: 1px solid #eee; border-radius:5px;"
                                  onerror="this.src='/images/placeholder.png'" />
@@ -77,26 +83,22 @@
                 </div>
 
                 <div class="form-group full-width" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
-
                     <label class="toggle-switch" for="InStock">
                         <input type="checkbox" id="InStock" name="InStock" value="true" class="toggle-input" @(Model.InStock ? "checked" : "") />
                         <input type="hidden" name="InStock" value="false" />
                         <span style="font-weight: bold;">متوفر في المخزون</span>
                     </label>
-
                     <label class="toggle-switch" for="IsHotDeal">
                         <input type="checkbox" id="IsHotDeal" name="IsHotDeal" value="true" class="toggle-input" @(Model.IsHotDeal ? "checked" : "") />
                         <input type="hidden" name="IsHotDeal" value="false" />
                         <span style="font-weight: bold;">عرض خاص (Hot Deal)</span>
                     </label>
-
                     <label class="toggle-switch" for="IsBestSeller">
                         <input type="checkbox" id="IsBestSeller" name="IsBestSeller" value="true" class="toggle-input" @(Model.IsBestSeller ? "checked" : "") />
                         <input type="hidden" name="IsBestSeller" value="false" />
                         <span style="font-weight: bold;">الأكثر مبيعاً (Best Seller)</span>
                     </label>
                 </div>
-
             </div>
 
             <div class="form-actions">
