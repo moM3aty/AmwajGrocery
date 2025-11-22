@@ -21,6 +21,7 @@ namespace AmwajGrocery.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        // ... (كل الدوال السابقة كما هي: Login, Dashboard, Products, SaveProduct...) ...
         [HttpGet]
         public IActionResult Login()
         {
@@ -52,24 +53,18 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Login");
         }
 
+        // المنتجات
         [Authorize]
         public async Task<IActionResult> Products(string search, int page = 1)
         {
             int pageSize = 10;
             var query = _context.Products.Include(p => p.Category).AsQueryable();
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                query = query.Where(p => p.NameAr.Contains(search) || p.NameEn.Contains(search));
-            }
-
+            if (!string.IsNullOrEmpty(search)) query = query.Where(p => p.NameAr.Contains(search) || p.NameEn.Contains(search));
             int totalItems = await query.CountAsync();
             var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
             ViewBag.SearchTerm = search;
-
             return View(products);
         }
 
@@ -83,7 +78,42 @@ namespace AmwajGrocery.Controllers
             return View(product);
         }
 
-
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveProduct(Product model, IFormFile? ImageFile)
+        {
+            ModelState.Remove("ImageUrl"); ModelState.Remove("Category");
+            if (ModelState.IsValid)
+            {
+                if (model.Id == 0)
+                {
+                    if (ImageFile != null && ImageFile.Length > 0) model.ImageUrl = await SaveImage(ImageFile);
+                    _context.Products.Add(model);
+                }
+                else
+                {
+                    var existingProduct = await _context.Products.FindAsync(model.Id);
+                    if (existingProduct == null) return NotFound();
+                    existingProduct.NameAr = model.NameAr;
+                    existingProduct.NameEn = model.NameEn;
+                    existingProduct.Description = model.Description;
+                    existingProduct.DescriptionEn = model.DescriptionEn;
+                    existingProduct.Price = model.Price;
+                    existingProduct.OldPrice = model.OldPrice;
+                    existingProduct.CategoryId = model.CategoryId;
+                    existingProduct.InStock = model.InStock;
+                    existingProduct.IsHotDeal = model.IsHotDeal;
+                    existingProduct.IsBestSeller = model.IsBestSeller;
+                    if (ImageFile != null && ImageFile.Length > 0) existingProduct.ImageUrl = await SaveImage(ImageFile);
+                    _context.Products.Update(existingProduct);
+                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products");
+            }
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            return View("ProductForm", model);
+        }
 
         [HttpPost]
         [Authorize]
@@ -94,25 +124,18 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Products");
         }
 
-
+        // الفئات
         [Authorize]
         public async Task<IActionResult> Categories(string search, int page = 1)
         {
-            int pageSize = 10;
+            int pageSize = 6;
             var query = _context.Categories.Include(c => c.Products).AsQueryable();
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                query = query.Where(c => c.NameAr.Contains(search) || c.NameEn.Contains(search));
-            }
-
+            if (!string.IsNullOrEmpty(search)) query = query.Where(c => c.NameAr.Contains(search) || c.NameEn.Contains(search));
             int totalItems = await query.CountAsync();
             var categories = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
             ViewBag.SearchTerm = search;
-
             return View(categories);
         }
 
@@ -130,9 +153,7 @@ namespace AmwajGrocery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveCategory(Category model, IFormFile? ImageFile)
         {
-            ModelState.Remove("ImageUrl");
-            ModelState.Remove("Products");
-
+            ModelState.Remove("ImageUrl"); ModelState.Remove("Products");
             if (ModelState.IsValid)
             {
                 if (model.Id == 0)
@@ -164,38 +185,19 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Categories");
         }
 
+        // الطلبات
         [Authorize]
         public async Task<IActionResult> Orders(string search, int page = 1)
         {
             int pageSize = 10;
             var query = _context.Orders.Include(o => o.OrderItems).OrderByDescending(o => o.OrderDate).AsQueryable();
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                query = query.Where(o => o.Id.ToString().Contains(search));
-            }
-
+            if (!string.IsNullOrEmpty(search)) query = query.Where(o => o.Id.ToString().Contains(search));
             int totalItems = await query.CountAsync();
             var orders = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
             ViewBag.SearchTerm = search;
-
             return View(orders);
-        }
-
-        private async Task<string> SaveImage(IFormFile imageFile)
-        {
-            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(fileStream);
-            }
-            return "images/" + uniqueFileName;
         }
 
         [HttpPost]
@@ -239,93 +241,137 @@ namespace AmwajGrocery.Controllers
 
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveProduct(Product model, IFormFile? ImageFile)
-        {
-            ModelState.Remove("ImageUrl");
-            ModelState.Remove("Category");
-
-            if (ModelState.IsValid)
-            {
-                if (model.Id == 0)
-                {
-                    if (ImageFile != null && ImageFile.Length > 0) model.ImageUrl = await SaveImage(ImageFile);
-                    _context.Products.Add(model);
-                }
-                else
-                {
-                    var existingProduct = await _context.Products.FindAsync(model.Id);
-                    if (existingProduct == null) return NotFound();
-
-                    existingProduct.NameAr = model.NameAr;
-                    existingProduct.NameEn = model.NameEn;
-                    existingProduct.Description = model.Description; 
-                    existingProduct.DescriptionEn = model.DescriptionEn;
-                    existingProduct.Price = model.Price;
-                    existingProduct.OldPrice = model.OldPrice;
-                    existingProduct.CategoryId = model.CategoryId;
-                    existingProduct.InStock = model.InStock;
-                    existingProduct.IsHotDeal = model.IsHotDeal;
-                    existingProduct.IsBestSeller = model.IsBestSeller;
-
-                    if (ImageFile != null && ImageFile.Length > 0) existingProduct.ImageUrl = await SaveImage(ImageFile);
-                    _context.Products.Update(existingProduct);
-                }
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Products");
-            }
-            ViewBag.Categories = await _context.Categories.ToListAsync();
-            return View("ProductForm", model);
-        }
-
-        [HttpPost]
-        [Authorize]
         public async Task<IActionResult> ImportExcel(IFormFile file)
         {
-            if (file == null || file.Length == 0) return BadRequest("يرجى رفع ملف.");
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            using (var stream = new MemoryStream())
+            if (file == null || file.Length == 0)
             {
-                await file.CopyToAsync(stream);
-                using (var package = new ExcelPackage(stream))
+                TempData["ErrorMessage"] = "يرجى اختيار ملف لرفعه.";
+                return RedirectToAction("Dashboard");
+            }
+
+            try
+            {
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                using (var stream = new MemoryStream())
                 {
-                    var worksheet = package.Workbook.Worksheets[0];
-                    var rowCount = worksheet.Dimension.Rows;
-                    for (int row = 2; row <= rowCount; row++)
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
                     {
-                        var categoryName = worksheet.Cells[row, 6].Value?.ToString()?.Trim();
-                        if (string.IsNullOrEmpty(categoryName)) continue;
+                        var worksheet = package.Workbook.Worksheets[0];
+                        var rowCount = worksheet.Dimension.Rows;
+                        int addedCount = 0;
 
-                        var category = await _context.Categories.FirstOrDefaultAsync(c => c.NameAr == categoryName);
-                        if (category == null)
+                        for (int row = 2; row <= rowCount; row++)
                         {
-                            category = new Category { NameAr = categoryName, NameEn = categoryName, ImageUrl = "images/default-cat.webp" };
-                            _context.Categories.Add(category);
-                            await _context.SaveChangesAsync();
+                            var categoryName = worksheet.Cells[row, 6].Value?.ToString()?.Trim();
+                            if (string.IsNullOrEmpty(categoryName)) continue;
+
+                            var category = await _context.Categories.FirstOrDefaultAsync(c => c.NameAr == categoryName);
+                            if (category == null)
+                            {
+                                category = new Category { NameAr = categoryName, NameEn = categoryName, ImageUrl = "images/default-cat.webp" };
+                                _context.Categories.Add(category);
+                                await _context.SaveChangesAsync();
+                            }
+
+                            var product = new Product
+                            {
+                                NameAr = worksheet.Cells[row, 2].Value?.ToString()?.Trim(),
+                                NameEn = worksheet.Cells[row, 3].Value?.ToString()?.Trim(),
+                                Description = worksheet.Cells[row, 4].Value?.ToString()?.Trim(),
+                                Price = Convert.ToDecimal(worksheet.Cells[row, 5].Value),
+                                CategoryId = category.Id,
+                                ImageUrl = worksheet.Cells[row, 7].Value?.ToString()?.Trim(),
+                                InStock = worksheet.Cells[row, 8].Value?.ToString()?.ToLower()?.Trim() == "true",
+                                OldPrice = worksheet.Cells[row, 9].Value != null ? Convert.ToDecimal(worksheet.Cells[row, 9].Value) : null,
+                                IsBestSeller = worksheet.Cells[row, 10].Value?.ToString()?.ToLower()?.Trim() == "true",
+                                IsHotDeal = worksheet.Cells[row, 11].Value?.ToString()?.ToLower()?.Trim() == "true",
+                                DescriptionEn = worksheet.Cells[row, 12].Value?.ToString()?.Trim()
+                            };
+                            _context.Products.Add(product);
+                            addedCount++;
                         }
+                        await _context.SaveChangesAsync();
 
-                        var product = new Product
-                        {
-                            NameAr = worksheet.Cells[row, 2].Value?.ToString()?.Trim(),
-                            NameEn = worksheet.Cells[row, 3].Value?.ToString()?.Trim(),
-                            Description = worksheet.Cells[row, 4].Value?.ToString()?.Trim(), 
-                            Price = Convert.ToDecimal(worksheet.Cells[row, 5].Value),
-                            CategoryId = category.Id,
-                            ImageUrl = worksheet.Cells[row, 7].Value?.ToString()?.Trim(),
-                            InStock = worksheet.Cells[row, 8].Value?.ToString()?.ToLower()?.Trim() == "true",
-                            OldPrice = worksheet.Cells[row, 9].Value != null ? Convert.ToDecimal(worksheet.Cells[row, 9].Value) : null,
-                            IsBestSeller = worksheet.Cells[row, 10].Value?.ToString()?.ToLower()?.Trim() == "true",
-                            IsHotDeal = worksheet.Cells[row, 11].Value?.ToString()?.ToLower()?.Trim() == "true",
-
-                            DescriptionEn = worksheet.Cells[row, 12].Value?.ToString()?.Trim()
-                        };
-                        _context.Products.Add(product);
+                        TempData["SuccessMessage"] = $"تم استيراد {addedCount} منتج بنجاح!";
                     }
-                    await _context.SaveChangesAsync();
                 }
             }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "حدث خطأ أثناء الاستيراد: " + ex.Message;
+            }
+
             return RedirectToAction("Dashboard");
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ExportProducts()
+        {
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            var products = await _context.Products.Include(p => p.Category).ToListAsync();
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Products");
+
+                // العناوين
+                worksheet.Cells[1, 1].Value = "Id";
+                worksheet.Cells[1, 2].Value = "NameAr";
+                worksheet.Cells[1, 3].Value = "NameEn";
+                worksheet.Cells[1, 4].Value = "Description";
+                worksheet.Cells[1, 5].Value = "Price";
+                worksheet.Cells[1, 6].Value = "Category";
+                worksheet.Cells[1, 7].Value = "ImageUrl";
+                worksheet.Cells[1, 8].Value = "Stock";
+                worksheet.Cells[1, 9].Value = "OldPrice";
+                worksheet.Cells[1, 10].Value = "IsBestSeller";
+                worksheet.Cells[1, 11].Value = "IsHotDeal";
+                worksheet.Cells[1, 12].Value = "DescriptionEn";
+
+                // البيانات
+                for (int i = 0; i < products.Count; i++)
+                {
+                    var p = products[i];
+                    worksheet.Cells[i + 2, 1].Value = p.Id;
+                    worksheet.Cells[i + 2, 2].Value = p.NameAr;
+                    worksheet.Cells[i + 2, 3].Value = p.NameEn;
+                    worksheet.Cells[i + 2, 4].Value = p.Description;
+                    worksheet.Cells[i + 2, 5].Value = p.Price;
+                    worksheet.Cells[i + 2, 6].Value = p.Category?.NameAr;
+                    worksheet.Cells[i + 2, 7].Value = p.ImageUrl;
+                    worksheet.Cells[i + 2, 8].Value = p.InStock;
+                    worksheet.Cells[i + 2, 9].Value = p.OldPrice;
+                    worksheet.Cells[i + 2, 10].Value = p.IsBestSeller;
+                    worksheet.Cells[i + 2, 11].Value = p.IsHotDeal;
+                    worksheet.Cells[i + 2, 12].Value = p.DescriptionEn;
+                }
+
+                worksheet.Cells.AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+                string excelName = $"Products-{DateTime.Now:yyyyMMdd}.xlsx";
+
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            }
+        }
+
+        private async Task<string> SaveImage(IFormFile imageFile)
+        {
+            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+            return "images/" + uniqueFileName;
+        }
+
         public class OrderDto { public decimal TotalAmount { get; set; } public List<OrderItemDto> Items { get; set; } }
         public class OrderItemDto { public string Name { get; set; } public int Qty { get; set; } public decimal Price { get; set; } }
     }

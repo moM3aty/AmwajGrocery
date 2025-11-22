@@ -40,29 +40,40 @@
 
     <div class="page-section" style="background: white; padding: 30px; border-radius: 20px; box-shadow: var(--shadow-card);">
         <h3 style="color: #636e72; border-bottom: 1px solid #eee; padding-bottom: 15px;">
-            <i class="fas fa-file-excel"></i> استيراد البيانات
+            <i class="fas fa-database"></i> إدارة البيانات (Excel)
         </h3>
 
-        <div style="display: flex; flex-direction: column; align-items: center; padding: 20px;">
-            <p style="color: #666; margin-bottom: 20px; text-align: center;">
-                يمكنك تحديث قائمة المنتجات بالكامل دفعة واحدة عبر رفع ملف Excel.
-            </p>
+        <div style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 30px;">
 
-            <form method="post" enctype="multipart/form-data" action="/Admin/ImportExcel" style="width: 100%; max-width: 500px;">
-                <div style="border: 2px dashed #dfe6e9; padding: 30px; border-radius: 15px; text-align: center; transition: 0.3s; cursor: pointer; position: relative;"
-                     onclick="document.getElementById('excelFile').click()"
-                     onmouseover="this.style.borderColor='var(--amwaj-primary)'"
-                     onmouseout="this.style.borderColor='#dfe6e9'">
+            <div style="text-align: center; width: 100%;">
+                <p style="color: #666; margin-bottom: 10px;">تصدير جميع المنتجات الحالية إلى ملف Excel</p>
+                <a href="/Admin/ExportProducts" class="add-to-cart-btn" style="background: #27ae60; width: auto; padding: 10px 30px; text-decoration: none; display: inline-block;">
+                    <i class="fas fa-file-download"></i> تصدير المنتجات (Export)
+                </a>
+            </div>
 
-                    <i class="fas fa-cloud-upload-alt fa-3x" style="color: #b2bec3; margin-bottom: 15px;"></i>
-                    <p style="margin: 0; font-weight: bold; color: #2d3436;">اضغط لرفع ملف Excel</p>
-                    <input type="file" id="excelFile" name="file" accept=".xlsx" required style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
-                </div>
+            <hr style="width: 80%; border: 0; border-top: 1px solid #eee;">
 
-                <button type="submit" class="add-to-cart-btn" style="margin-top: 20px;">
-                    <i class="fas fa-check-circle"></i> بدء الاستيراد
-                </button>
-            </form>
+            <div style="width: 100%; max-width: 500px; text-align: center;">
+                <p style="color: #666; margin-bottom: 10px;">استيراد منتجات جديدة أو تحديث الحالية</p>
+                <form method="post" enctype="multipart/form-data" action="/Admin/ImportExcel">
+                    <div style="border: 2px dashed #dfe6e9; padding: 20px; border-radius: 15px; text-align: center; transition: 0.3s; cursor: pointer; position: relative;"
+                         onclick="document.getElementById('excelFile').click()"
+                         onmouseover="this.style.borderColor='var(--amwaj-primary)'"
+                         onmouseout="this.style.borderColor='#dfe6e9'">
+
+                        <i class="fas fa-cloud-upload-alt fa-2x" style="color: #b2bec3; margin-bottom: 10px;"></i>
+                        <p style="margin: 0; font-weight: bold; color: #2d3436; font-size: 0.9em;">اختر ملف Excel</p>
+                        <input type="file" id="excelFile" name="file" accept=".xlsx" required style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" onchange="showFileName(this)">
+                    </div>
+
+                    <p id="fileNameDisplay" style="color: var(--amwaj-primary); font-weight: bold; margin-top: 10px; display: none;"></p>
+
+                    <button type="submit" class="add-to-cart-btn" style="margin-top: 15px; width: auto; padding: 10px 30px;">
+                        <i class="fas fa-upload"></i> استيراد (Import)
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -97,3 +108,25 @@
             font-weight: bold;
         }
 </style>
+
+<script>
+    function showFileName(input) {
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        if (input.files && input.files.length > 0) {
+            fileNameDisplay.textContent = "تم اختيار: " + input.files[0].name;
+            fileNameDisplay.style.display = 'block';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var successMsg = '@TempData["SuccessMessage"]';
+        var errorMsg = '@TempData["ErrorMessage"]';
+
+        if (successMsg) {
+            showToast(successMsg);
+        }
+        if (errorMsg) {
+            alert(errorMsg); 
+        }
+    });
+</script>
