@@ -81,6 +81,7 @@ header {
     height: 70px;
     display: flex;
     align-items: center;
+    border-bottom: 3px solid #00BFB3;
 }
 
 .header-container {
@@ -207,7 +208,7 @@ header {
 
 .search-input {
     width: 100%;
-    padding: 10px 20px;
+    padding: 5px 20px;
     border: 1px solid var(--amwaj-secondary);
     border-radius: 25px;
     outline: none;
