@@ -19,10 +19,7 @@ namespace AmwajGrocery.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, NameAr = "ألبان وأجبان", NameEn = "Dairy & Cheese", ImageUrl = "images/dairy.webp" },
-                new Category { Id = 2, NameAr = "عصائر ومشروبات", NameEn = "Juices & Drinks", ImageUrl = "images/juice.webp" }
-            );
+           
         }
     }
 }

@@ -1,0 +1,341 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\AmwajGrocery.bundle.scp.css",
+      "PackagePath": "staticwebassets\\AmwajGrocery.4dqwtw7n9o.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\css\\style.css",
+      "PackagePath": "staticwebassets\\css\\style.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\2be4ac78-f151-4d03-b5b0-36793e061d1b_logo.png",
+      "PackagePath": "staticwebassets\\images\\2be4ac78-f151-4d03-b5b0-36793e061d1b_logo.png"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\3b49ac0e-d4f3-4567-854e-35e318086162_1.webp",
+      "PackagePath": "staticwebassets\\images\\3b49ac0e-d4f3-4567-854e-35e318086162_1.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\6fd199c6-d9cc-458a-a5d9-a36087c5952f_logo.png",
+      "PackagePath": "staticwebassets\\images\\6fd199c6-d9cc-458a-a5d9-a36087c5952f_logo.png"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\950175ab-9da8-425e-ba79-d8690b21e6eb_done.png",
+      "PackagePath": "staticwebassets\\images\\950175ab-9da8-425e-ba79-d8690b21e6eb_done.png"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\bf10e7e6-5832-4fe7-8cec-67b13d17aead_logo.png",
+      "PackagePath": "staticwebassets\\images\\bf10e7e6-5832-4fe7-8cec-67b13d17aead_logo.png"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\f55b5135-5775-4fac-8522-7660faf14136_logo.png",
+      "PackagePath": "staticwebassets\\images\\f55b5135-5775-4fac-8522-7660faf14136_logo.png"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\logo-removebg-preview (3).png",
+      "PackagePath": "staticwebassets\\images\\logo-removebg-preview (3).png"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\logo.jpeg",
+      "PackagePath": "staticwebassets\\images\\logo.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\البان.webp",
+      "PackagePath": "staticwebassets\\images\\البان.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\جبنه شيدر.webp",
+      "PackagePath": "staticwebassets\\images\\جبنه شيدر.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\حليب.webp",
+      "PackagePath": "staticwebassets\\images\\حليب.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\عصاير.webp",
+      "PackagePath": "staticwebassets\\images\\عصاير.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\لحوم.webp",
+      "PackagePath": "staticwebassets\\images\\لحوم.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\مانجا.webp",
+      "PackagePath": "staticwebassets\\images\\مانجا.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\مياه.webp",
+      "PackagePath": "staticwebassets\\images\\مياه.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\images\\وجبات خفيفه.webp",
+      "PackagePath": "staticwebassets\\images\\وجبات خفيفه.webp"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\js\\main.js",
+      "PackagePath": "staticwebassets\\js\\main.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\LICENSE",
+      "PackagePath": "staticwebassets\\lib\\bootstrap"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\manifest.json",
+      "PackagePath": "staticwebassets\\manifest.json"
+    },
+    {
+      "Id": "C:\\Users\\M3aty\\Desktop\\AmwajGrocery\\AmwajGrocery\\wwwroot\\sw.js",
+      "PackagePath": "staticwebassets\\sw.js"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.AmwajGrocery.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.AmwajGrocery.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.AmwajGrocery.props",
+      "PackagePath": "build\\AmwajGrocery.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.AmwajGrocery.props",
+      "PackagePath": "buildMultiTargeting\\AmwajGrocery.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.AmwajGrocery.props",
+      "PackagePath": "buildTransitive\\AmwajGrocery.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

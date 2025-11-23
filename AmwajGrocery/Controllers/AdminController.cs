@@ -21,7 +21,6 @@ namespace AmwajGrocery.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        // ... (كل الدوال السابقة كما هي: Login, Dashboard, Products, SaveProduct...) ...
         [HttpGet]
         public IActionResult Login()
         {
@@ -53,7 +52,6 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Login");
         }
 
-        // المنتجات
         [Authorize]
         public async Task<IActionResult> Products(string search, int page = 1)
         {
@@ -124,7 +122,16 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Products");
         }
 
-        // الفئات
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteAllProducts()
+        {
+            var products = await _context.Products.ToListAsync();
+            _context.Products.RemoveRange(products);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Products");
+        }
+
         [Authorize]
         public async Task<IActionResult> Categories(string search, int page = 1)
         {
@@ -185,7 +192,21 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Categories");
         }
 
-        // الطلبات
+        // --- (جديد) حذف جميع الفئات ---
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteAllCategories()
+        {
+                var products = await _context.Products.ToListAsync();
+            _context.Products.RemoveRange(products);
+
+            var categories = await _context.Categories.ToListAsync();
+            _context.Categories.RemoveRange(categories);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Categories");
+        }
+
         [Authorize]
         public async Task<IActionResult> Orders(string search, int page = 1)
         {
@@ -248,7 +269,6 @@ namespace AmwajGrocery.Controllers
                 TempData["ErrorMessage"] = "يرجى اختيار ملف لرفعه.";
                 return RedirectToAction("Dashboard");
             }
-
             try
             {
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
@@ -260,12 +280,10 @@ namespace AmwajGrocery.Controllers
                         var worksheet = package.Workbook.Worksheets[0];
                         var rowCount = worksheet.Dimension.Rows;
                         int addedCount = 0;
-
                         for (int row = 2; row <= rowCount; row++)
                         {
                             var categoryName = worksheet.Cells[row, 6].Value?.ToString()?.Trim();
                             if (string.IsNullOrEmpty(categoryName)) continue;
-
                             var category = await _context.Categories.FirstOrDefaultAsync(c => c.NameAr == categoryName);
                             if (category == null)
                             {
@@ -273,7 +291,6 @@ namespace AmwajGrocery.Controllers
                                 _context.Categories.Add(category);
                                 await _context.SaveChangesAsync();
                             }
-
                             var product = new Product
                             {
                                 NameAr = worksheet.Cells[row, 2].Value?.ToString()?.Trim(),
@@ -292,16 +309,11 @@ namespace AmwajGrocery.Controllers
                             addedCount++;
                         }
                         await _context.SaveChangesAsync();
-
                         TempData["SuccessMessage"] = $"تم استيراد {addedCount} منتج بنجاح!";
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = "حدث خطأ أثناء الاستيراد: " + ex.Message;
-            }
-
+            catch (Exception ex) { TempData["ErrorMessage"] = "حدث خطأ: " + ex.Message; }
             return RedirectToAction("Dashboard");
         }
 
@@ -311,51 +323,30 @@ namespace AmwajGrocery.Controllers
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             var products = await _context.Products.Include(p => p.Category).ToListAsync();
-
             using (var package = new ExcelPackage())
             {
                 var worksheet = package.Workbook.Worksheets.Add("Products");
-
-                // العناوين
-                worksheet.Cells[1, 1].Value = "Id";
-                worksheet.Cells[1, 2].Value = "NameAr";
-                worksheet.Cells[1, 3].Value = "NameEn";
-                worksheet.Cells[1, 4].Value = "Description";
-                worksheet.Cells[1, 5].Value = "Price";
-                worksheet.Cells[1, 6].Value = "Category";
-                worksheet.Cells[1, 7].Value = "ImageUrl";
-                worksheet.Cells[1, 8].Value = "Stock";
-                worksheet.Cells[1, 9].Value = "OldPrice";
-                worksheet.Cells[1, 10].Value = "IsBestSeller";
-                worksheet.Cells[1, 11].Value = "IsHotDeal";
-                worksheet.Cells[1, 12].Value = "DescriptionEn";
-
-                // البيانات
+                worksheet.Cells[1, 1].Value = "Id"; worksheet.Cells[1, 2].Value = "NameAr";
+                worksheet.Cells[1, 3].Value = "NameEn"; worksheet.Cells[1, 4].Value = "Description";
+                worksheet.Cells[1, 5].Value = "Price"; worksheet.Cells[1, 6].Value = "Category";
+                worksheet.Cells[1, 7].Value = "ImageUrl"; worksheet.Cells[1, 8].Value = "Stock";
+                worksheet.Cells[1, 9].Value = "OldPrice"; worksheet.Cells[1, 10].Value = "IsBestSeller";
+                worksheet.Cells[1, 11].Value = "IsHotDeal"; worksheet.Cells[1, 12].Value = "DescriptionEn";
                 for (int i = 0; i < products.Count; i++)
                 {
                     var p = products[i];
-                    worksheet.Cells[i + 2, 1].Value = p.Id;
-                    worksheet.Cells[i + 2, 2].Value = p.NameAr;
-                    worksheet.Cells[i + 2, 3].Value = p.NameEn;
-                    worksheet.Cells[i + 2, 4].Value = p.Description;
-                    worksheet.Cells[i + 2, 5].Value = p.Price;
-                    worksheet.Cells[i + 2, 6].Value = p.Category?.NameAr;
-                    worksheet.Cells[i + 2, 7].Value = p.ImageUrl;
-                    worksheet.Cells[i + 2, 8].Value = p.InStock;
-                    worksheet.Cells[i + 2, 9].Value = p.OldPrice;
-                    worksheet.Cells[i + 2, 10].Value = p.IsBestSeller;
-                    worksheet.Cells[i + 2, 11].Value = p.IsHotDeal;
-                    worksheet.Cells[i + 2, 12].Value = p.DescriptionEn;
+                    worksheet.Cells[i + 2, 1].Value = p.Id; worksheet.Cells[i + 2, 2].Value = p.NameAr;
+                    worksheet.Cells[i + 2, 3].Value = p.NameEn; worksheet.Cells[i + 2, 4].Value = p.Description;
+                    worksheet.Cells[i + 2, 5].Value = p.Price; worksheet.Cells[i + 2, 6].Value = p.Category?.NameAr;
+                    worksheet.Cells[i + 2, 7].Value = p.ImageUrl; worksheet.Cells[i + 2, 8].Value = p.InStock;
+                    worksheet.Cells[i + 2, 9].Value = p.OldPrice; worksheet.Cells[i + 2, 10].Value = p.IsBestSeller;
+                    worksheet.Cells[i + 2, 11].Value = p.IsHotDeal; worksheet.Cells[i + 2, 12].Value = p.DescriptionEn;
                 }
-
                 worksheet.Cells.AutoFitColumns();
-
                 var stream = new MemoryStream();
                 package.SaveAs(stream);
                 stream.Position = 0;
-                string excelName = $"Products-{DateTime.Now:yyyyMMdd}.xlsx";
-
-                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Products-{DateTime.Now:yyyyMMdd}.xlsx");
             }
         }
 
@@ -365,10 +356,7 @@ namespace AmwajGrocery.Controllers
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
             string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(fileStream);
-            }
+            using (var fileStream = new FileStream(filePath, FileMode.Create)) { await imageFile.CopyToAsync(fileStream); }
             return "images/" + uniqueFileName;
         }
 

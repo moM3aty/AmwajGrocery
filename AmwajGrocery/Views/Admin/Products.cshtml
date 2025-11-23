@@ -11,11 +11,21 @@
 <div class="container" style="padding-top: 40px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2>إدارة المنتجات</h2>
-        <a href="/Admin/ProductForm" class="add-to-cart-btn" style="width: auto; text-decoration: none; background: var(--amwaj-green);">
-            <i class="fas fa-plus"></i> إضافة منتج جديد
-        </a>
+        <div style="display: flex; gap: 10px;">
+            <!-- زر حذف الكل -->
+            <form action="/Admin/DeleteAllProducts" method="post" onsubmit="return confirm('تحذير هام: هل أنت متأكد من حذف جميع المنتجات؟ لا يمكن التراجع عن هذا الإجراء.');">
+                <button type="submit" class="add-to-cart-btn" style="width: auto; background: #e74c3c;">
+                    <i class="fas fa-trash-alt"></i> حذف الكل
+                </button>
+            </form>
+
+            <a href="/Admin/ProductForm" class="add-to-cart-btn" style="width: auto; text-decoration: none; background: var(--amwaj-green);">
+                <i class="fas fa-plus"></i> إضافة منتج جديد
+            </a>
+        </div>
     </div>
 
+    <!-- شريط البحث -->
     <form method="get" action="/Admin/Products" style="margin-bottom: 20px;">
         <div style="position: relative; max-width: 400px;">
             <input type="text" name="search" value="@searchTerm" placeholder="ابحث باسم المنتج..."
@@ -72,6 +82,7 @@
         </table>
     </div>
 
+    <!-- Pagination (Smart) -->
     @if (totalPages > 1)
     {
         <div style="margin-top: 20px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap;">
@@ -89,7 +100,6 @@
                     <a href="/Admin/Products?page=1&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">1</a>
                     if (startPage > 2)
                     {
-
                         <span style="padding: 8px;">...</span>
                     }
                 }
@@ -106,7 +116,6 @@
                 {
                     if (endPage < totalPages - 1)
                     {
-
                         <span style="padding: 8px;">...</span>
                     }
                     <a href="/Admin/Products?page=@totalPages&search=@searchTerm" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; background: white;">@totalPages</a>

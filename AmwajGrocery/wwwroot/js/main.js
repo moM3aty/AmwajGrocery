@@ -10,7 +10,7 @@ if (localStorage.getItem('amwaj_cart')) {
 function saveCart() {
     localStorage.setItem('amwaj_cart', JSON.stringify(cart));
     updateCartUI();
-}
+}  
 
 function updateQuantity(id, action) {
     const display = document.getElementById(`qty-${id}`);
@@ -251,24 +251,20 @@ function scrollToTop() {
 document.addEventListener('keyup', (e) => {
     if (e.key == 'PrintScreen') {
         navigator.clipboard.writeText('');
-        alert(isArabic ? 'التقاط الشاشة غير مسموح به!' : 'Screenshots are not allowed!');
+        showScreenshotOverlay();
     }
 });
 
-document.addEventListener('keydown', function(e) {
-    
+document.addEventListener('keydown', function (e) {
     if ((e.ctrlKey && e.key === 'p') ||
         (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4')) ||
         (e.key === 'Meta' && e.shiftKey && e.key === 's')) {
-        
         e.preventDefault();
-        const overlay = document.getElementById('screenshot-overlay');
-        if(overlay) {
-            overlay.style.display = 'flex';
-            setTimeout(() => { overlay.style.display = 'none'; }, 2000);
-        }
+        showScreenshotOverlay();
     }
 });
+
+
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 
@@ -299,3 +295,29 @@ window.addEventListener('appinstalled', () => {
     if (installBtn) installBtn.style.display = 'none';
     console.log('PWA was installed');
 });
+
+
+window.addEventListener('blur', () => {
+    document.body.style.filter = 'blur(20px)';
+    document.getElementById('screenshot-overlay').style.display = 'flex';
+});
+
+window.addEventListener('focus', () => {
+    setTimeout(() => {
+        document.body.style.filter = 'none';
+        document.getElementById('screenshot-overlay').style.display = 'none';
+    }, 300); 
+});
+
+function showScreenshotOverlay() {
+    const overlay = document.getElementById('screenshot-overlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        setTimeout(() => { overlay.style.display = 'none'; }, 2000);
+    }
+    if (isArabic) alert('عذراً، يمنع التقاط صور للشاشة للحفاظ على الخصوصية.');
+    else alert('Screenshots are not allowed for privacy reasons.');
+}
+
+document.ondragstart = function () { return false; };
+document.onselectstart = function () { return false; };

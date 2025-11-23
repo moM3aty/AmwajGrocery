@@ -23,6 +23,8 @@
     <link rel="apple-touch-icon" href="/images/logo-removebg-preview (3).png">
 </head>
 <body>
+    <div class="watermark-layer"></div>
+
     <div id="screenshot-overlay">
         <div>
             <i class="fas fa-shield-alt fa-3x" style="margin-bottom: 20px;"></i>
@@ -69,7 +71,7 @@
                 <div class="header-actions-group">
                     <button id="pwa-install-btn" class="lang-btn" style="display: none; border-color: var(--amwaj-primary); color: var(--amwaj-primary);">
                         <i class="fas fa-download"></i> @(isAr ? "تثبيت التطبيق" : "Install App")
-                    </button>
+                    </button>s
 
                     <form action="/Home/ChangeLanguage" method="post" style="display:inline;">
                         <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
@@ -129,19 +131,16 @@
             <p style="text-align: center; margin: 0; font-size: 0.9em; color: #777;">
                 &copy; 2025 @(isAr ? "بقالة أمواج صلالة. جميع الحقوق محفوظة." : "Amwaj Salalah Grocery. All rights reserved.")
             </p>
+            <p style="text-align: center; margin: 0; font-size: 0.9em; color: #777;">
+                &copy; 2025 @(isAr ? "تم التصميم بواسطة GMT WEB" : "designed & developed By GMT WEB")
+            </p>
         </div>
     </footer>
 
     <script>
         var isArabic = @(isAr.ToString().ToLower());
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('Service Worker registered!', reg))
-                    .catch(err => console.log('Service Worker registration failed', err));
-            });
-        }
+       
     </script>
     <script src="~/js/main.js?v=3.1"></script>
     @await RenderSectionAsync("Scripts", required: false)
