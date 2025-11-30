@@ -93,16 +93,25 @@ namespace AmwajGrocery.Controllers
                 {
                     var existingProduct = await _context.Products.FindAsync(model.Id);
                     if (existingProduct == null) return NotFound();
+
                     existingProduct.NameAr = model.NameAr;
                     existingProduct.NameEn = model.NameEn;
-                    existingProduct.Description = model.Description;
-                    existingProduct.DescriptionEn = model.DescriptionEn;
                     existingProduct.Price = model.Price;
+                    existingProduct.PriceCarton = model.PriceCarton; 
                     existingProduct.OldPrice = model.OldPrice;
                     existingProduct.CategoryId = model.CategoryId;
                     existingProduct.InStock = model.InStock;
                     existingProduct.IsHotDeal = model.IsHotDeal;
                     existingProduct.IsBestSeller = model.IsBestSeller;
+
+                    existingProduct.ShortDescriptionAr = model.ShortDescriptionAr;
+                    existingProduct.ShortDescriptionEn = model.ShortDescriptionEn;
+                    existingProduct.LongDescriptionAr = model.LongDescriptionAr;
+                    existingProduct.LongDescriptionEn = model.LongDescriptionEn;
+
+                    existingProduct.MetaKeywords = model.MetaKeywords;
+                    existingProduct.MetaDescription = model.MetaDescription;
+
                     if (ImageFile != null && ImageFile.Length > 0) existingProduct.ImageUrl = await SaveImage(ImageFile);
                     _context.Products.Update(existingProduct);
                 }
@@ -192,17 +201,14 @@ namespace AmwajGrocery.Controllers
             return RedirectToAction("Categories");
         }
 
-        // --- (جديد) حذف جميع الفئات ---
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> DeleteAllCategories()
         {
-                var products = await _context.Products.ToListAsync();
+            var products = await _context.Products.ToListAsync();
             _context.Products.RemoveRange(products);
-
             var categories = await _context.Categories.ToListAsync();
             _context.Categories.RemoveRange(categories);
-
             await _context.SaveChangesAsync();
             return RedirectToAction("Categories");
         }
@@ -264,11 +270,7 @@ namespace AmwajGrocery.Controllers
         [Authorize]
         public async Task<IActionResult> ImportExcel(IFormFile file)
         {
-            if (file == null || file.Length == 0)
-            {
-                TempData["ErrorMessage"] = "يرجى اختيار ملف لرفعه.";
-                return RedirectToAction("Dashboard");
-            }
+            if (file == null || file.Length == 0) { TempData["ErrorMessage"] = "يرجى اختيار ملف."; return RedirectToAction("Dashboard"); }
             try
             {
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
@@ -291,11 +293,12 @@ namespace AmwajGrocery.Controllers
                                 _context.Categories.Add(category);
                                 await _context.SaveChangesAsync();
                             }
+
                             var product = new Product
                             {
                                 NameAr = worksheet.Cells[row, 2].Value?.ToString()?.Trim(),
                                 NameEn = worksheet.Cells[row, 3].Value?.ToString()?.Trim(),
-                                Description = worksheet.Cells[row, 4].Value?.ToString()?.Trim(),
+                                ShortDescriptionAr = worksheet.Cells[row, 4].Value?.ToString()?.Trim(),
                                 Price = Convert.ToDecimal(worksheet.Cells[row, 5].Value),
                                 CategoryId = category.Id,
                                 ImageUrl = worksheet.Cells[row, 7].Value?.ToString()?.Trim(),
@@ -303,7 +306,13 @@ namespace AmwajGrocery.Controllers
                                 OldPrice = worksheet.Cells[row, 9].Value != null ? Convert.ToDecimal(worksheet.Cells[row, 9].Value) : null,
                                 IsBestSeller = worksheet.Cells[row, 10].Value?.ToString()?.ToLower()?.Trim() == "true",
                                 IsHotDeal = worksheet.Cells[row, 11].Value?.ToString()?.ToLower()?.Trim() == "true",
-                                DescriptionEn = worksheet.Cells[row, 12].Value?.ToString()?.Trim()
+                                ShortDescriptionEn = worksheet.Cells[row, 12].Value?.ToString()?.Trim(),
+
+                                LongDescriptionAr = worksheet.Cells[row, 13].Value?.ToString()?.Trim(),
+                                LongDescriptionEn = worksheet.Cells[row, 14].Value?.ToString()?.Trim(),
+                                MetaKeywords = worksheet.Cells[row, 15].Value?.ToString()?.Trim(),
+                                MetaDescription = worksheet.Cells[row, 16].Value?.ToString()?.Trim(),
+                                PriceCarton = worksheet.Cells[row, 17].Value != null ? Convert.ToDecimal(worksheet.Cells[row, 17].Value) : null
                             };
                             _context.Products.Add(product);
                             addedCount++;
@@ -327,20 +336,35 @@ namespace AmwajGrocery.Controllers
             {
                 var worksheet = package.Workbook.Worksheets.Add("Products");
                 worksheet.Cells[1, 1].Value = "Id"; worksheet.Cells[1, 2].Value = "NameAr";
-                worksheet.Cells[1, 3].Value = "NameEn"; worksheet.Cells[1, 4].Value = "Description";
+                worksheet.Cells[1, 3].Value = "NameEn"; worksheet.Cells[1, 4].Value = "ShortDescriptionAr";
                 worksheet.Cells[1, 5].Value = "Price"; worksheet.Cells[1, 6].Value = "Category";
                 worksheet.Cells[1, 7].Value = "ImageUrl"; worksheet.Cells[1, 8].Value = "Stock";
                 worksheet.Cells[1, 9].Value = "OldPrice"; worksheet.Cells[1, 10].Value = "IsBestSeller";
-                worksheet.Cells[1, 11].Value = "IsHotDeal"; worksheet.Cells[1, 12].Value = "DescriptionEn";
+                worksheet.Cells[1, 11].Value = "IsHotDeal"; worksheet.Cells[1, 12].Value = "ShortDescriptionEn";
+                worksheet.Cells[1, 13].Value = "LongDescriptionAr"; worksheet.Cells[1, 14].Value = "LongDescriptionEn";
+                worksheet.Cells[1, 15].Value = "MetaKeywords"; worksheet.Cells[1, 16].Value = "MetaDescription";
+                worksheet.Cells[1, 17].Value = "PriceCarton";
+
                 for (int i = 0; i < products.Count; i++)
                 {
                     var p = products[i];
-                    worksheet.Cells[i + 2, 1].Value = p.Id; worksheet.Cells[i + 2, 2].Value = p.NameAr;
-                    worksheet.Cells[i + 2, 3].Value = p.NameEn; worksheet.Cells[i + 2, 4].Value = p.Description;
-                    worksheet.Cells[i + 2, 5].Value = p.Price; worksheet.Cells[i + 2, 6].Value = p.Category?.NameAr;
-                    worksheet.Cells[i + 2, 7].Value = p.ImageUrl; worksheet.Cells[i + 2, 8].Value = p.InStock;
-                    worksheet.Cells[i + 2, 9].Value = p.OldPrice; worksheet.Cells[i + 2, 10].Value = p.IsBestSeller;
-                    worksheet.Cells[i + 2, 11].Value = p.IsHotDeal; worksheet.Cells[i + 2, 12].Value = p.DescriptionEn;
+                    worksheet.Cells[i + 2, 1].Value = p.Id;
+                    worksheet.Cells[i + 2, 2].Value = p.NameAr;
+                    worksheet.Cells[i + 2, 3].Value = p.NameEn;
+                    worksheet.Cells[i + 2, 4].Value = p.ShortDescriptionAr;
+                    worksheet.Cells[i + 2, 5].Value = p.Price;
+                    worksheet.Cells[i + 2, 6].Value = p.Category?.NameAr;
+                    worksheet.Cells[i + 2, 7].Value = p.ImageUrl;
+                    worksheet.Cells[i + 2, 8].Value = p.InStock;
+                    worksheet.Cells[i + 2, 9].Value = p.OldPrice;
+                    worksheet.Cells[i + 2, 10].Value = p.IsBestSeller;
+                    worksheet.Cells[i + 2, 11].Value = p.IsHotDeal;
+                    worksheet.Cells[i + 2, 12].Value = p.ShortDescriptionEn;
+                    worksheet.Cells[i + 2, 13].Value = p.LongDescriptionAr;
+                    worksheet.Cells[i + 2, 14].Value = p.LongDescriptionEn;
+                    worksheet.Cells[i + 2, 15].Value = p.MetaKeywords;
+                    worksheet.Cells[i + 2, 16].Value = p.MetaDescription;
+                    worksheet.Cells[i + 2, 17].Value = p.PriceCarton;
                 }
                 worksheet.Cells.AutoFitColumns();
                 var stream = new MemoryStream();

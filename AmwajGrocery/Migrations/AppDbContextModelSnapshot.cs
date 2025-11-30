@@ -111,13 +111,6 @@ namespace AmwajGrocery.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -130,6 +123,22 @@ namespace AmwajGrocery.Migrations
 
                     b.Property<bool>("IsHotDeal")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LongDescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LongDescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetaDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetaKeywords")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameAr")
                         .IsRequired()
@@ -144,6 +153,17 @@ namespace AmwajGrocery.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("PriceCarton")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ShortDescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

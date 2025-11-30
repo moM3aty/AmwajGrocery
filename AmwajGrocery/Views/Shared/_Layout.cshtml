@@ -2,11 +2,14 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 
 @{
+    // تحديد اللغة الحالية من النظام
     var currentCulture = CultureInfo.CurrentUICulture.Name;
     var isAr = currentCulture.StartsWith("ar");
     var dir = isAr ? "rtl" : "ltr";
     var langCode = isAr ? "ar" : "en";
-    var targetLang = isAr ? "en" : "ar"; 
+
+    // تحديد اللغة المعاكسة للزر
+    var targetLang = isAr ? "en" : "ar";
 }
 
 <!DOCTYPE html>
@@ -14,17 +17,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
     <title>@ViewData["Title"] - @(isAr ? "بقالة أمواج صلالة" : "Amwaj Salalah Grocery")</title>
-    <link rel="stylesheet" href="~/css/style.css?v=3.1">
+
+    <link rel="stylesheet" href="~/css/style.css?v=3.7">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00BFB3">
     <link rel="apple-touch-icon" href="/images/logo-removebg-preview (3).png">
 </head>
 <body>
-    <div class="watermark-layer"></div>
-
     <div id="screenshot-overlay">
         <div>
             <i class="fas fa-shield-alt fa-3x" style="margin-bottom: 20px;"></i>
@@ -55,6 +66,38 @@
         </div>
     </div>
 
+    <div id="product-modal" class="product-modal-overlay" onclick="closeProductModal(event)">
+        <div class="product-modal-content">
+            <button class="product-modal-close" onclick="closeProductModal(null)"><i class="fas fa-times"></i></button>
+
+            <div class="product-modal-image-col">
+                <img id="modal-img" src="" alt="Product Image">
+            </div>
+
+            <div class="product-modal-details-col">
+                <h2 id="modal-title" class="modal-product-title"></h2>
+
+                <div class="unit-selector" id="modal-unit-wrapper" style="margin-bottom: 15px;"></div>
+
+                <div id="modal-price" class="modal-product-price"></div>
+
+                <div id="modal-desc" class="modal-product-desc summernote-content"></div>
+
+                <div class="modal-actions-wrapper">
+                    <div class="quantity-control" style="justify-content: flex-start; margin: 0;">
+                        <button class="qty-btn" id="modal-qty-dec"><i class="fas fa-minus"></i></button>
+                        <span class="qty-display" id="modal-qty-val">1</span>
+                        <button class="qty-btn" id="modal-qty-inc"><i class="fas fa-plus"></i></button>
+                    </div>
+
+                    <button id="modal-add-btn" class="add-to-cart-btn" style="width: auto; flex-grow: 1;">
+                        <i class="fas fa-shopping-cart"></i> @(isAr ? "أضف للسلة" : "Add to Cart")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <header>
         <div class="top-header-bar">
             <div class="container header-container">
@@ -71,10 +114,10 @@
                 <div class="header-actions-group">
                     <button id="pwa-install-btn" class="lang-btn" style="display: none; border-color: var(--amwaj-primary); color: var(--amwaj-primary);">
                         <i class="fas fa-download"></i> @(isAr ? "تثبيت التطبيق" : "Install App")
-                    </button>s
+                    </button>
 
                     <form action="/Home/ChangeLanguage" method="post" style="display:inline;">
-                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString + (Context.Request.QueryString.HasValue ? "&" : "?") + "t=" + DateTime.Now.Ticks)" />
                         <input type="hidden" name="culture" value="@targetLang" />
                         <button type="submit" class="lang-btn">
                             <i class="fas fa-globe"></i>
@@ -129,20 +172,26 @@
                 <a href="https://api.whatsapp.com/send?phone=96896755118" target="_blank"><i class="fab fa-whatsapp"></i></a>
             </div>
             <p style="text-align: center; margin: 0; font-size: 0.9em; color: #777;">
-                &copy; 2025 @(isAr ? "بقالة أمواج صلالة. جميع الحقوق محفوظة." : "Amwaj Salalah Grocery. All rights reserved.")
-            </p>
-            <p style="text-align: center; margin: 0; font-size: 0.9em; color: #777;">
-                &copy; 2025 @(isAr ? "تم التصميم بواسطة GMT WEB" : "designed & developed By GMT WEB")
+                &copy; 2025 @(isAr ? "بقالة أمواج صلالة. جميع الحقوق محفوظة." : "Amwaj Salalah Grocery. All rights reserved.") <a href="https://api.whatsapp.com/send?phone=96896755118" style="color:#00bfb3">96896755118</a>
             </p>
         </div>
     </footer>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
     <script>
         var isArabic = @(isAr.ToString().ToLower());
 
-       
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed', err));
+            });
+        }
     </script>
-    <script src="~/js/main.js?v=3.1"></script>
+
+    <script src="~/js/main.js?v=3.7"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

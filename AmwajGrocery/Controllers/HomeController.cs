@@ -16,10 +16,10 @@ namespace AmwajGrocery.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var deals = await _context.Products.Include(p => p.Category).Where(p => p.IsHotDeal && p.InStock).Take(6).ToListAsync();
+            var deals = await _context.Products.Include(p => p.Category).Where(p => p.IsHotDeal && p.InStock).Take(4).ToListAsync();
             if (!deals.Any()) deals = await _context.Products.Include(p => p.Category).Where(p => p.InStock).OrderByDescending(p => p.Id).Take(4).ToListAsync();
 
-            var bestSellers = await _context.Products.Include(p => p.Category).Where(p => p.IsBestSeller && p.InStock).Take(6).ToListAsync();
+            var bestSellers = await _context.Products.Include(p => p.Category).Where(p => p.IsBestSeller && p.InStock).Take(4).ToListAsync();
             if (!bestSellers.Any()) bestSellers = await _context.Products.Include(p => p.Category).Where(p => p.InStock).OrderBy(p => p.Price).Take(4).ToListAsync();
 
             var categories = await _context.Categories.Include(c => c.Products).ToListAsync();
@@ -49,6 +49,9 @@ namespace AmwajGrocery.Controllers
                 ViewBag.CategoryNameEn = cat?.NameEn;
             }
 
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            ViewBag.CurrentCategoryId = categoryId; 
+
             var products = await query.ToListAsync();
             return View(products);
         }
@@ -62,7 +65,7 @@ namespace AmwajGrocery.Controllers
                 .Where(p => p.NameAr.Contains(q) || p.NameEn.Contains(q))
                 .Select(p => new {
                     id = p.Id,
-                    name = p.NameAr,   
+                    name = p.NameAr,
                     nameEn = p.NameEn,
                     price = p.Price,
                     image = p.ImageUrl

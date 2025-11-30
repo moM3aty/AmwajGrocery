@@ -4,14 +4,55 @@
     var categories = ViewBag.Categories as List<AmwajGrocery.Models.Category>;
 }
 
-<div class="container" style="padding-top: 40px; max-width: 850px;">
-    <div class="admin-form-card">
+<style>
+    .watermark-layer, #screenshot-overlay {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
 
+    body {
+        filter: none !important;
+        -webkit-user-select: text !important; 
+        user-select: text !important;
+        pointer-events: auto !important;
+    }
+
+    .note-editor {
+        z-index: 1000 !important;
+        position: relative;
+        background-color: white;
+        box-shadow: none !important; 
+    }
+
+    .note-popover, .note-dropdown-menu {
+        z-index: 100000 !important; 
+    }
+
+    .note-editor.note-frame.fullscreen {
+        z-index: 999999 !important;
+        background-color: white !important;
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+    }
+
+    .note-editable {
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        cursor: text !important;
+    }
+</style>
+
+<div class="container" style="padding-top: 40px; max-width: 900px;">
+    <div class="admin-form-card">
         <div class="admin-form-header">
-            <h2>
-                <i class="fas @(Model.Id == 0 ? "fa-plus-circle" : "fa-edit")"></i>
-                @(Model.Id == 0 ? "إضافة منتج جديد" : "تعديل بيانات المنتج")
-            </h2>
+            <h2>@(Model.Id == 0 ? "إضافة منتج جديد" : "تعديل: " + Model.NameAr)</h2>
         </div>
 
         <form asp-action="SaveProduct" asp-controller="Admin" method="post" enctype="multipart/form-data">
@@ -20,91 +61,137 @@
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label class="form-label">الاسم بالعربي</label>
-                    <input type="text" name="NameAr" value="@Model.NameAr" required class="form-input" placeholder="مثال: حليب المراعي" />
+                    <label class="form-label">الاسم (عربي)</label>
+                    <input type="text" name="NameAr" value="@Model.NameAr" required class="form-input" />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">الاسم بالانجليزي</label>
-                    <input type="text" name="NameEn" value="@Model.NameEn" required class="form-input" placeholder="Ex: Almarai Milk" style="direction: ltr;" />
-                </div>
-
-                <!-- الوصف العربي -->
-                <div class="form-group">
-                    <label class="form-label">وصف المنتج (عربي)</label>
-                    <textarea name="Description" class="form-input" placeholder="تفاصيل المنتج بالعربية...">@Model.Description</textarea>
-                </div>
-
-                <!-- الوصف الإنجليزي (الجديد) -->
-                <div class="form-group">
-                    <label class="form-label">وصف المنتج (إنجليزي)</label>
-                    <textarea name="DescriptionEn" class="form-input" style="direction: ltr;" placeholder="Product details in English...">@Model.DescriptionEn</textarea>
+                    <label class="form-label">الاسم (إنجليزي)</label>
+                    <input type="text" name="NameEn" value="@Model.NameEn" required class="form-input" style="direction: ltr;" />
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">السعر الحالي (ر.ع)</label>
-                    <input type="number" step="0.001" name="Price"
-                           value="@(Model.Id == 0 ? "" : Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))"
-                           required class="form-input" placeholder="0.000" />
+                    <label class="form-label">سعر القطعة (ر.ع)</label>
+                    <input type="number" step="0.001" name="Price" value="@(Model.Id == 0 ? "" : Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))" required class="form-input" placeholder="0.000" />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">السعر القديم (قبل الخصم)</label>
-                    <input type="number" step="0.001" name="OldPrice"
-                           value="@(Model.OldPrice.HasValue? Model.OldPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")"
-                           class="form-input" placeholder="اختياري" />
+                    <label class="form-label">سعر الكرتون (اختياري)</label>
+                    <input type="number" step="0.001" name="PriceCarton" value="@(Model.PriceCarton.HasValue? Model.PriceCarton.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")" class="form-input" placeholder="0.000" />
                 </div>
-
+                <div class="form-group">
+                    <label class="form-label">سعر قديم (للخصم)</label>
+                    <input type="number" step="0.001" name="OldPrice" value="@(Model.OldPrice.HasValue? Model.OldPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")" class="form-input" />
+                </div>
                 <div class="form-group">
                     <label class="form-label">الفئة</label>
                     <select name="CategoryId" required class="form-input">
-                        <option value="">-- اختر التصنيف --</option>
+                        <option value="">اختر التصنيف</option>
                         @if (categories != null)
                         {
                             foreach (var cat in categories)
                             {
-                                <option value="@cat.Id" selected="@(Model.CategoryId == cat.Id ? "selected" : null)">
-                                    @cat.NameAr / @cat.NameEn
-                                </option>
+                                <option value="@cat.Id" selected="@(Model.CategoryId == cat.Id ? "selected" : null)">@cat.NameAr / @cat.NameEn</option>
                             }
                         }
                     </select>
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">وصف مختصر (عربي)</label>
+                    <textarea name="ShortDescriptionAr" class="form-input" style="height:80px;">@Model.ShortDescriptionAr</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Short Description (En)</label>
+                    <textarea name="ShortDescriptionEn" class="form-input" style="height:80px; direction:ltr;">@Model.ShortDescriptionEn</textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">وصف تفصيلي كامل (عربي)</label>
+                    <textarea id="summernote-ar" name="LongDescriptionAr">@Model.LongDescriptionAr</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Full Description (En)</label>
+                    <textarea id="summernote-en" name="LongDescriptionEn">@Model.LongDescriptionEn</textarea>
+                </div>
+
+                <div class="form-group full-width" style="background:#f9f9f9; padding:15px; border-radius:10px;">
+                    <h4 style="margin-top:0;">إعدادات SEO</h4>
+                    <label class="form-label">الكلمات المفتاحية</label>
+                    <input type="text" name="MetaKeywords" value="@Model.MetaKeywords" class="form-input" />
+                    <br><br>
+                    <label class="form-label">وصف الميتا</label>
+                    <textarea name="MetaDescription" class="form-input" style="height:60px;">@Model.MetaDescription</textarea>
+                </div>
+
+                <div class="form-group full-width">
                     <label class="form-label">صورة المنتج</label>
                     <input type="file" name="ImageFile" class="form-input" accept="image/*" />
                     @if (!string.IsNullOrEmpty(Model.ImageUrl))
                     {
-                        <div style="margin-top: 10px;">
-                            <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))"
-                                 style="width: 80px; height: 80px; object-fit: contain; background:#f9f9f9; border: 1px solid #eee; border-radius:5px;"
-                                 onerror="this.src='/images/placeholder.png'" />
-                        </div>
+                        <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))" style="width:60px; margin-top:10px;" />
                     }
                 </div>
 
-                <div class="form-group full-width" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
-                    <label class="toggle-switch" for="InStock">
-                        <input type="checkbox" id="InStock" name="InStock" value="true" class="toggle-input" @(Model.InStock ? "checked" : "") />
+                <div class="form-group full-width" style="display:flex; gap:20px; flex-wrap:wrap;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="InStock" value="true" class="toggle-input" @(Model.InStock ? "checked" : "") />
+                        <span style="margin-right:10px;">متوفر</span>
                         <input type="hidden" name="InStock" value="false" />
-                        <span style="font-weight: bold;">متوفر في المخزون</span>
                     </label>
-                    <label class="toggle-switch" for="IsHotDeal">
-                        <input type="checkbox" id="IsHotDeal" name="IsHotDeal" value="true" class="toggle-input" @(Model.IsHotDeal ? "checked" : "") />
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="IsHotDeal" value="true" class="toggle-input" @(Model.IsHotDeal ? "checked" : "") />
+                        <span style="margin-right:10px;">عرض خاص</span>
                         <input type="hidden" name="IsHotDeal" value="false" />
-                        <span style="font-weight: bold;">عرض خاص (Hot Deal)</span>
                     </label>
-                    <label class="toggle-switch" for="IsBestSeller">
-                        <input type="checkbox" id="IsBestSeller" name="IsBestSeller" value="true" class="toggle-input" @(Model.IsBestSeller ? "checked" : "") />
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="IsBestSeller" value="true" class="toggle-input" @(Model.IsBestSeller ? "checked" : "") />
+                        <span style="margin-right:10px;">الأكثر مبيعاً</span>
                         <input type="hidden" name="IsBestSeller" value="false" />
-                        <span style="font-weight: bold;">الأكثر مبيعاً (Best Seller)</span>
                     </label>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-save">حفظ البيانات</button>
+                <button type="submit" class="btn-save">حفظ المنتج</button>
                 <a href="/Admin/Products" class="btn-cancel">إلغاء</a>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+
+            document.onselectstart = null;
+            document.ondragstart = null;
+            document.oncontextmenu = null;
+
+            window.removeEventListener('blur', function(){});
+
+            $('#summernote-ar').summernote({
+                placeholder: 'اكتب وصف المنتج التفصيلي هنا...',
+                tabsize: 2,
+                height: 200,
+                direction: 'rtl',
+                dialogsInBody: true, 
+                toolbar: [
+                  ['style', ['style']],
+                  ['font', ['bold', 'underline', 'clear']],
+                  ['color', ['color']],
+                  ['para', ['ul', 'ol', 'paragraph']],
+                  ['table', ['table']],
+                  ['insert', ['link', 'picture']],
+                  ['view', ['fullscreen', 'codeview', 'help']]
+                ]
+            });
+
+            $('#summernote-en').summernote({
+                placeholder: 'Write product details here...',
+                tabsize: 2,
+                height: 200,
+                direction: 'ltr',
+                dialogsInBody: true
+            });
+        });
+    </script>
+}

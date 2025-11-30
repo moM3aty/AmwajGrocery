@@ -1,4 +1,6 @@
-﻿let cart = {};
+﻿
+let cart = {};
+
 
 if (localStorage.getItem('amwaj_cart')) {
     try {
@@ -10,7 +12,29 @@ if (localStorage.getItem('amwaj_cart')) {
 function saveCart() {
     localStorage.setItem('amwaj_cart', JSON.stringify(cart));
     updateCartUI();
-}  
+}
+
+function updateCartUI() {
+    const count = Object.values(cart).reduce((a, b) => a + b.qty, 0);
+    const cartCountEl = document.querySelector('.cart-count');
+    if (cartCountEl) cartCountEl.textContent = count;
+}
+
+
+function changeProductUnit(id, unit, piecePrice, cartonPrice) {
+    const priceDisplay = document.getElementById(`display-price-${id}`);
+    const currency = isArabic ? 'ر.ع' : 'OMR';
+
+    if (unit === 'carton') {
+        priceDisplay.textContent = `${parseFloat(cartonPrice).toFixed(3)} ${currency}`;
+        const oldPrice = document.getElementById(`old-price-${id}`);
+        if (oldPrice) oldPrice.style.display = 'none';
+    } else {
+        priceDisplay.textContent = `${parseFloat(piecePrice).toFixed(3)} ${currency}`;
+        const oldPrice = document.getElementById(`old-price-${id}`);
+        if (oldPrice) oldPrice.style.display = 'block';
+    }
+}
 
 function updateQuantity(id, action) {
     const display = document.getElementById(`qty-${id}`);
@@ -21,33 +45,113 @@ function updateQuantity(id, action) {
     display.textContent = val;
 }
 
-function addToCart(id, name, price) {
+function addToCartDynamic(id, name) {
     const qtyDisplay = document.getElementById(`qty-${id}`);
     const qty = qtyDisplay ? parseInt(qtyDisplay.textContent || 1) : 1;
 
-    if (cart[id]) {
-        cart[id].qty += qty;
+    const unitSelect = document.getElementById(`unit-select-${id}`);
+    const unit = unitSelect ? unitSelect.value : 'piece';
+
+    const priceText = document.getElementById(`display-price-${id}`).textContent;
+    const price = parseFloat(priceText.replace(/[^\d.]/g, ''));
+
+    const cartItemId = `${id}-${unit}`;
+
+    let unitLabel = "";
+    if (unit === 'carton') unitLabel = isArabic ? "(كرتون)" : "(Carton)";
+    const finalName = `${name} ${unitLabel}`;
+
+    if (cart[cartItemId]) {
+        cart[cartItemId].qty += qty;
     } else {
-        cart[id] = { name: name, price: price, qty: qty };
+        cart[cartItemId] = { name: finalName, price: price, qty: qty, originalId: id, unit: unit };
     }
 
     saveCart();
     const msg = isArabic ? `تم إضافة ${qty} من ${name} للسلة` : `Added ${qty} of ${name} to cart`;
     showToast(msg);
-    
+
     if (qtyDisplay) qtyDisplay.textContent = 1;
+    updateCartUI();
 }
 
-function updateCartUI() {
-    const count = Object.values(cart).reduce((a, b) => a + b.qty, 0);
-    const cartCountEl = document.querySelector('.cart-count');
-    if (cartCountEl) cartCountEl.textContent = count;
+let currentProduct = null;
+let currentModalQty = 1;
+
+function openProductDetails(product) {
+    currentProduct = product;
+    currentModalQty = 1;
+    const currency = isArabic ? 'ر.ع' : 'OMR';
+
+    document.getElementById('modal-img').src = product.image;
+    document.getElementById('modal-title').textContent = product.name;
+    document.getElementById('modal-desc').innerHTML = product.desc;
+    document.getElementById('modal-qty-val').textContent = 1;
+
+
+    const unitWrapper = document.getElementById('modal-unit-wrapper');
+    const priceEl = document.getElementById('modal-price');
+    unitWrapper.innerHTML = '';
+
+
+    window.updateModalPrice = function (unit) {
+        if (unit === 'carton') {
+            priceEl.textContent = `${parseFloat(product.priceCarton).toFixed(3)} ${currency}`;
+        } else {
+            priceEl.textContent = `${parseFloat(product.price).toFixed(3)} ${currency}`;
+        }
+    };
+
+    if (product.priceCarton && parseFloat(product.priceCarton) > 0) {
+        unitWrapper.innerHTML = `
+            <select id="modal-unit-select" onchange="updateModalPrice(this.value)" 
+                    style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; font-weight:bold;">
+                <option value="piece">${isArabic ? "بالقطعة" : "Per Piece"}</option>
+                <option value="carton">${isArabic ? "بالكرتون" : "Carton"}</option>
+            </select>
+        `;
+        updateModalPrice('piece');
+    } else {
+        unitWrapper.innerHTML = `<div style="color:#777; font-weight:bold;">${isArabic ? "بالقطعة" : "Per Piece"}</div>`;
+        priceEl.textContent = `${parseFloat(product.price).toFixed(3)} ${currency}`;
+    }
+
+    document.getElementById('modal-qty-inc').onclick = () => { currentModalQty++; document.getElementById('modal-qty-val').textContent = currentModalQty; };
+    document.getElementById('modal-qty-dec').onclick = () => { if (currentModalQty > 1) currentModalQty--; document.getElementById('modal-qty-val').textContent = currentModalQty; };
+
+    document.getElementById('modal-add-btn').onclick = () => {
+        const unitSelect = document.getElementById('modal-unit-select');
+        const unit = unitSelect ? unitSelect.value : 'piece';
+        const finalPrice = unit === 'carton' ? product.priceCarton : product.price;
+        addToCartFromModal(product.id, product.name, parseFloat(finalPrice), currentModalQty, unit);
+        closeProductModal(null);
+    };
+
+    document.getElementById('product-modal').style.display = 'flex';
 }
 
-function removeFromCart(id) {
-    delete cart[id];
+function closeProductModal(e) {
+    if (e === null || e.target.id === 'product-modal') {
+        document.getElementById('product-modal').style.display = 'none';
+    }
+}
+
+function addToCartFromModal(id, name, price, qty, unit) {
+    const cartItemId = `${id}-${unit}`;
+    let unitLabel = "";
+    if (unit === 'carton') unitLabel = isArabic ? "(كرتون)" : "(Carton)";
+    const finalName = `${name} ${unitLabel}`;
+
+    if (cart[cartItemId]) {
+        cart[cartItemId].qty += qty;
+    } else {
+        cart[cartItemId] = { name: finalName, price: price, qty: qty, originalId: id, unit: unit };
+    }
+
     saveCart();
-    openCartModal(); 
+    const msg = isArabic ? `تم إضافة ${qty} من ${name} للسلة` : `Added ${qty} of ${name} to cart`;
+    showToast(msg);
+    updateCartUI();
 }
 
 
@@ -75,7 +179,7 @@ function openCartModal() {
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="font-weight:bold; color:var(--amwaj-accent);">${itemTotal.toFixed(3)}</span>
-                    <button onclick="removeFromCart(${id})" style="background:none; border:none; color:red; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                    <button onclick="removeFromCart('${id}')" style="background:none; border:none; color:red; cursor:pointer;"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
         `;
@@ -94,6 +198,12 @@ function closeCartModal(e) {
     if (e === null || e.target.id === 'cart-modal') {
         document.getElementById('cart-modal').style.display = 'none';
     }
+}
+
+function removeFromCart(id) {
+    delete cart[id];
+    saveCart();
+    openCartModal();
 }
 
 
@@ -117,10 +227,7 @@ async function sendOrderToWhatsApp() {
         });
     }
 
-    const orderData = {
-        totalAmount: total,
-        items: orderItems
-    };
+    const orderData = { totalAmount: total, items: orderItems };
 
     const btn = document.querySelector('.cart-footer .add-to-cart-btn');
     const originalText = btn.innerHTML;
@@ -138,21 +245,28 @@ async function sendOrderToWhatsApp() {
             const result = await response.json();
             const orderId = result.orderId;
 
-            
-            let message = `✨ *طلب جديد #${orderId}* ✨\n تكرما أرجو تجهيز الطلب الآتي 🛒\n\n🧾 *تفاصيل الطلب:*\n`;
-
-            for (let id in cart) {
-                let item = cart[id];
-                let itemTotal = item.price * item.qty;
-                let curr = isArabic ? 'ر.ع' : 'OMR';
-                message += `🔹 ${item.name}\n   الكمية: ${item.qty}\n   السعر: ${item.price.toFixed(3)} ${curr}\n   المجموع: ${itemTotal.toFixed(3)} ${curr}\n\n`;
+            let message = "";
+            if (isArabic) {
+                message = `✨ *طلب جديد #${orderId}* ✨\n تكرما أرجو تجهيز الطلب الآتي 🛒\n\n🧾 *تفاصيل الطلب:*\n`;
+                for (let id in cart) {
+                    let item = cart[id];
+                    let itemTotal = item.price * item.qty;
+                    message += `🔹 ${item.name}\n   الكمية: ${item.qty}\n   السعر: ${item.price.toFixed(3)} ${currency}\n   المجموع: ${itemTotal.toFixed(3)} ${currency}\n\n`;
+                }
+                message += `💰 *المجموع الإجمالي: ${total.toFixed(3)} ${currency}*\n\n`;
+                message += `🙏 شكراً بقالة أمواج صلالة وموعدنا معكم في طلب قادم بإذن الله 💙`;
+            } else {
+                message = `✨ *New Order #${orderId}* ✨\n Please prepare the following order 🛒\n\n🧾 *Order Details:*\n`;
+                for (let id in cart) {
+                    let item = cart[id];
+                    let itemTotal = item.price * item.qty;
+                    message += `🔹 ${item.name}\n   Qty: ${item.qty}\n   Price: ${item.price.toFixed(3)} ${currency}\n   Total: ${itemTotal.toFixed(3)} ${currency}\n\n`;
+                }
+                message += `💰 *Grand Total: ${total.toFixed(3)} ${currency}*\n\n`;
+                message += `🙏 Thank you Amwaj Salalah Grocery, see you in the next order! 💙`;
             }
 
-            message += `💰 *المجموع الإجمالي: ${total.toFixed(3)} ${currency}*\n\n`;
-            message += `🙏 شكراً بقالة أمواج صلالة وموعدنا معكم في طلب قادم بإذن الله 💙`;
-
             const phone = "96896755118";
-            
             window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`, '_blank');
 
             cart = {};
@@ -160,7 +274,6 @@ async function sendOrderToWhatsApp() {
             openCartModal();
             showToast(isArabic ? "تم إرسال الطلب بنجاح!" : "Order sent successfully!");
         } else {
-            console.error("Failed to save order");
             alert(isArabic ? "حدث خطأ أثناء حفظ الطلب." : "Error saving order.");
         }
     } catch (error) {
@@ -171,6 +284,7 @@ async function sendOrderToWhatsApp() {
         btn.disabled = false;
     }
 }
+
 
 let searchTimeout;
 function liveSearch(query) {
@@ -193,6 +307,7 @@ function liveSearch(query) {
                     data.forEach(item => {
                         const div = document.createElement('div');
                         div.className = 'search-result-item';
+
                         let imgUrl = item.image;
                         if (!imgUrl) imgUrl = defaultImg;
                         else if (!imgUrl.startsWith('http') && !imgUrl.startsWith('/')) {
@@ -226,14 +341,13 @@ function liveSearch(query) {
     }, 300);
 }
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const resultsDiv = document.getElementById('live-search-results');
     const searchInput = document.getElementById('product-search');
     if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
         resultsDiv.style.display = 'none';
     }
 });
-
 
 function showToast(msg) {
     const toast = document.getElementById('custom-toast');
@@ -246,6 +360,32 @@ function showToast(msg) {
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+let deferredPrompt;
+const installBtn = document.getElementById('pwa-install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn) installBtn.style.display = 'inline-flex';
+});
+
+if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') { console.log('User accepted the install prompt'); }
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+        }
+    });
+}
+
+window.addEventListener('appinstalled', () => {
+    if (installBtn) installBtn.style.display = 'none';
+});
+
 
 
 document.addEventListener('keyup', (e) => {
@@ -264,49 +404,21 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-
-
 document.addEventListener('contextmenu', event => event.preventDefault());
-
-let deferredPrompt;
-const installBtn = document.getElementById('pwa-install-btn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (installBtn) installBtn.style.display = 'inline-flex';
-});
-
-if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-            }
-            deferredPrompt = null;
-            installBtn.style.display = 'none';
-        }
-    });
-}
-
-window.addEventListener('appinstalled', () => {
-    if (installBtn) installBtn.style.display = 'none';
-    console.log('PWA was installed');
-});
 
 
 window.addEventListener('blur', () => {
     document.body.style.filter = 'blur(20px)';
-    document.getElementById('screenshot-overlay').style.display = 'flex';
+    const overlay = document.getElementById('screenshot-overlay');
+    if (overlay) overlay.style.display = 'flex';
 });
 
 window.addEventListener('focus', () => {
     setTimeout(() => {
         document.body.style.filter = 'none';
-        document.getElementById('screenshot-overlay').style.display = 'none';
-    }, 300); 
+        const overlay = document.getElementById('screenshot-overlay');
+        if (overlay) overlay.style.display = 'none';
+    }, 200);
 });
 
 function showScreenshotOverlay() {
@@ -315,9 +427,5 @@ function showScreenshotOverlay() {
         overlay.style.display = 'flex';
         setTimeout(() => { overlay.style.display = 'none'; }, 2000);
     }
-    if (isArabic) alert('عذراً، يمنع التقاط صور للشاشة للحفاظ على الخصوصية.');
-    else alert('Screenshots are not allowed for privacy reasons.');
+    if (isArabic) alert('عذراً، يمنع التقاط صور للشاشة!');
 }
-
-document.ondragstart = function () { return false; };
-document.onselectstart = function () { return false; };

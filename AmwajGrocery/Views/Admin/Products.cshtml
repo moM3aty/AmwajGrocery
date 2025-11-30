@@ -12,7 +12,6 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2>إدارة المنتجات</h2>
         <div style="display: flex; gap: 10px;">
-            <!-- زر حذف الكل -->
             <form action="/Admin/DeleteAllProducts" method="post" onsubmit="return confirm('تحذير هام: هل أنت متأكد من حذف جميع المنتجات؟ لا يمكن التراجع عن هذا الإجراء.');">
                 <button type="submit" class="add-to-cart-btn" style="width: auto; background: #e74c3c;">
                     <i class="fas fa-trash-alt"></i> حذف الكل
@@ -25,7 +24,6 @@
         </div>
     </div>
 
-    <!-- شريط البحث -->
     <form method="get" action="/Admin/Products" style="margin-bottom: 20px;">
         <div style="position: relative; max-width: 400px;">
             <input type="text" name="search" value="@searchTerm" placeholder="ابحث باسم المنتج..."
@@ -82,7 +80,6 @@
         </table>
     </div>
 
-    <!-- Pagination (Smart) -->
     @if (totalPages > 1)
     {
         <div style="margin-top: 20px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap;">

@@ -1,0 +1,82 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Http
+@using System.Text.Json
+@inject IHttpContextAccessor HttpContextAccessor
+@model AmwajGrocery.Models.Product
+
+@{
+
+    var isAr = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
+
+    var defaultImage = "/images/logo-removebg-preview (3).png";
+
+    var displayName = isAr ? Model.NameAr : (string.IsNullOrEmpty(Model.NameEn) ? Model.NameAr : Model.NameEn);
+    var desc = isAr ? Model.LongDescriptionAr : Model.LongDescriptionEn;
+    if (string.IsNullOrEmpty(desc)) desc = isAr ? Model.ShortDescriptionAr : Model.ShortDescriptionEn;
+
+    var price = Model.Price.ToString(CultureInfo.InvariantCulture);
+    var cartonPrice = Model.PriceCarton.HasValue ? Model.PriceCarton.Value.ToString(CultureInfo.InvariantCulture) : "0";
+    var imgUrl = string.IsNullOrEmpty(Model.ImageUrl) ? defaultImage : (Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'));
+
+    var productJson = new
+    {
+        id = Model.Id,
+        name = displayName,
+        desc = desc ?? "", 
+        price = price,
+        priceCarton = cartonPrice,
+        image = imgUrl
+    };
+
+    var jsonString = JsonSerializer.Serialize(productJson);
+}
+
+<div class="product-card" id="product-@Model.Id">
+    <div class="product-image-wrapper" style="cursor: pointer;"
+         onclick='openProductDetails(@Html.Raw(jsonString))'>
+        <img src="@imgUrl" alt="@displayName" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
+    </div>
+
+    <h4 style="min-height:40px; font-size:1em; cursor: pointer;"
+        onclick='openProductDetails(@Html.Raw(jsonString))'>
+        @displayName
+    </h4>
+
+    <p style="font-size: 0.85em; color: #666; height: 3em; overflow: hidden; margin-bottom: 5px;">
+        @(isAr? Model.ShortDescriptionAr: Model.ShortDescriptionEn)
+    </p>
+
+    <div class="unit-selector" style="margin-bottom: 10px; width: 100%;">
+        @if (Model.PriceCarton.HasValue && Model.PriceCarton.Value > 0)
+        {
+            <select id="unit-select-@Model.Id" onchange="changeProductUnit(@Model.Id, this.value, '@price', '@cartonPrice')"
+                    style="width: 100%; padding: 5px; border-radius: 5px; border: 1px solid #ddd; font-size: 0.9em;">
+                <option value="piece">@(isAr ? "بالقطعة" : "Piece")</option>
+                <option value="carton">@(isAr ? "بالكرتون" : "Carton")</option>
+            </select>
+        }
+        else
+        {
+            <div style="font-size: 0.9em; color: #888; padding: 5px;">@(isAr ? "بالقطعة" : "Per Piece")</div>
+            <input type="hidden" id="unit-select-@Model.Id" value="piece" />
+        }
+    </div>
+
+    <div class="price-section">
+        @if (Model.OldPrice.HasValue)
+        {
+            <p class="original-price" id="old-price-@Model.Id">@Model.OldPrice.Value.ToString("F3", CultureInfo.InvariantCulture) @(isAr ? "ر.ع" : "OMR")</p>
+        }
+        <p class="current-price" id="display-price-@Model.Id">@price @(isAr ? "ر.ع" : "OMR")</p>
+    </div>
+
+    <div class="quantity-control">
+        <button class="qty-btn" onclick="updateQuantity(@Model.Id, 'dec')"><i class="fas fa-minus"></i></button>
+        <span class="qty-display" id="qty-@Model.Id">1</span>
+        <button class="qty-btn" onclick="updateQuantity(@Model.Id, 'inc')"><i class="fas fa-plus"></i></button>
+    </div>
+
+    <button class="add-to-cart-btn" onclick="addToCartDynamic(@Model.Id, '@displayName.Replace("'", "\\'")')">
+        @(isAr ? "أضف للسلة" : "Add to Cart")
+    </button>
+</div>

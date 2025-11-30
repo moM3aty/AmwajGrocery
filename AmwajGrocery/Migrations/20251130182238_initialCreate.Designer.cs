@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AmwajGrocery.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251123224939_edit2")]
-    partial class edit2
+    [Migration("20251130182238_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -114,13 +114,6 @@ namespace AmwajGrocery.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -133,6 +126,22 @@ namespace AmwajGrocery.Migrations
 
                     b.Property<bool>("IsHotDeal")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LongDescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LongDescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetaDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetaKeywords")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameAr")
                         .IsRequired()
@@ -147,6 +156,17 @@ namespace AmwajGrocery.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("PriceCarton")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ShortDescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

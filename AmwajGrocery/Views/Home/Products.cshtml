@@ -1,21 +1,46 @@
 ﻿@using System.Globalization
-@model IEnumerable<AmwajGrocery.Models.Product>
+@using Microsoft.AspNetCore.Http
+@using AmwajGrocery.Models
+@inject IHttpContextAccessor HttpContextAccessor
+@model IEnumerable<Product>
+
 @{
     var isAr = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
+
+    ViewData["isAr"] = isAr;
 
     var titleAr = ViewBag.CategoryNameAr as string ?? "المنتجات";
     var titleEn = ViewBag.CategoryNameEn as string ?? "Products";
     ViewData["Title"] = isAr ? titleAr : titleEn;
 
-    var defaultImage = "/images/logo-removebg-preview (3).png";
+    var allCategories = ViewBag.Categories as List<Category>;
+    int? currentCatId = ViewBag.CurrentCategoryId as int?;
 }
 
 <div class="container" style="padding-top: 20px;">
 
     <div class="page-section">
-        <h1 style="text-align: center; color: var(--amwaj-primary);">
+        <h1 style="text-align: center; color: var(--amwaj-primary); margin-bottom: 20px;">
             @(isAr? titleAr : titleEn)
         </h1>
+
+        <div class="filter-container">
+            <a href="/Home/Products" class="filter-btn @(currentCatId == null ? "active" : "")">
+                @(isAr ? "الكل" : "All")
+            </a>
+
+            @if (allCategories != null)
+            {
+                foreach (var cat in allCategories)
+                {
+                    var catName = isAr ? cat.NameAr : (string.IsNullOrEmpty(cat.NameEn) ? cat.NameAr : cat.NameEn);
+
+                    <a href="/Home/Products?categoryId=@cat.Id" class="filter-btn @(currentCatId == cat.Id ? "active" : "")">
+                        @catName
+                    </a>
+                }
+            }
+        </div>
 
         @if (!string.IsNullOrEmpty(ViewBag.SearchQuery))
         {
@@ -45,47 +70,9 @@
             <div class="product-grid">
                 @foreach (var item in Model)
                 {
-                    <div class="product-card" id="product-@item.Id">
-                        <div class="product-image-wrapper">
-                            <img src="@GetImageSrc(item.ImageUrl)" alt="@(isAr? item.NameAr: item.NameEn)"
-                                 referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
-                        </div>
-
-                        <h4>@(isAr? item.NameAr: item.NameEn)</h4>
-                        <p style="font-size: 0.9em; color: #777;">@item.Description</p>
-
-                        <div class="price-section">
-                            @if (item.OldPrice.HasValue)
-                            {
-                                <p class="original-price">@item.OldPrice.Value.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
-                            }
-                            <p class="current-price">@item.Price.ToString("F3") @(isAr ? "ر.ع" : "OMR")</p>
-                        </div>
-
-                        <div class="quantity-control">
-                            <button class="qty-btn" onclick="updateQuantity(@item.Id, 'dec')"><i class="fas fa-minus"></i></button>
-                            <span class="qty-display" id="qty-@item.Id">1</span>
-                            <button class="qty-btn" onclick="updateQuantity(@item.Id, 'inc')"><i class="fas fa-plus"></i></button>
-                        </div>
-
-                        <button class="add-to-cart-btn" onclick="addToCart(@item.Id, '@(isAr? item.NameAr: item.NameEn)', @item.Price)">
-                            @(isAr ? "أضف للسلة" : "Add to Cart")
-                        </button>
-                    </div>
+                    <partial name="_ProductCard" model="item" view-data="ViewData" />
                 }
             </div>
         }
     </div>
 </div>
-
-@functions {
-    public string GetImageSrc(string url)
-    {
-        string defaultImg = "/images/logo-removebg-preview (3).png";
-        if (string.IsNullOrEmpty(url)) return defaultImg;
-        if (url.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return url;
-        var cleanUrl = url.TrimStart('/');
-        if (!cleanUrl.StartsWith("images/", StringComparison.OrdinalIgnoreCase)) return "/images/" + cleanUrl;
-        return "/" + cleanUrl;
-    }
-}
