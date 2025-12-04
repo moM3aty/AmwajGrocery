@@ -1,13 +1,9 @@
 wwwroot\css\style.css
 wwwroot\favicon.ico
-wwwroot\images\2be4ac78-f151-4d03-b5b0-36793e061d1b_logo.png
-wwwroot\images\3b49ac0e-d4f3-4567-854e-35e318086162_1.webp
-wwwroot\images\6fd199c6-d9cc-458a-a5d9-a36087c5952f_logo.png
-wwwroot\images\856cf0b7-39c4-4ae8-ba03-3fe85d85da1a_1.jpg
-wwwroot\images\950175ab-9da8-425e-ba79-d8690b21e6eb_done.png
-wwwroot\images\a4de34ed-4a4a-46aa-88cc-ee6d5d293b39_1.jpg
-wwwroot\images\bf10e7e6-5832-4fe7-8cec-67b13d17aead_logo.png
-wwwroot\images\f55b5135-5775-4fac-8522-7660faf14136_logo.png
+wwwroot\images\14e71ee9-74e5-4f42-9f4c-7c49e916d31d_logo.png
+wwwroot\images\37119863-048d-4da5-852d-9921f8bf0e5d_528618683_2900083920186244_956370499369716946_n.jpg
+wwwroot\images\437223c9-a3fe-4910-bd71-9df103b682a6_46857ab8-9aee-4ce1-9113-26b8658757a1_386745.jpg
+wwwroot\images\eff29091-ebac-44e5-806c-148abfa39ac8_0fad6d46-6037-431c-8a55-abeb2bf55ee4_Category.webp
 wwwroot\images\logo-removebg-preview (3).png
 wwwroot\images\logo.jpeg
 wwwroot\images\البان.webp

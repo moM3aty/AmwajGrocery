@@ -21,23 +21,24 @@ function updateCartUI() {
 }
 
 
-function changeProductUnit(id, unit, piecePrice, cartonPrice) {
-    const priceDisplay = document.getElementById(`display-price-${id}`);
+function changeProductUnit(domId, unit, piecePrice, cartonPrice) {
+    const priceDisplay = document.getElementById(`display-price-${domId}`);
     const currency = isArabic ? 'ر.ع' : 'OMR';
 
     if (unit === 'carton') {
         priceDisplay.textContent = `${parseFloat(cartonPrice).toFixed(3)} ${currency}`;
-        const oldPrice = document.getElementById(`old-price-${id}`);
+        const oldPrice = document.getElementById(`old-price-${domId}`);
         if (oldPrice) oldPrice.style.display = 'none';
     } else {
         priceDisplay.textContent = `${parseFloat(piecePrice).toFixed(3)} ${currency}`;
-        const oldPrice = document.getElementById(`old-price-${id}`);
+        const oldPrice = document.getElementById(`old-price-${domId}`);
         if (oldPrice) oldPrice.style.display = 'block';
     }
 }
 
-function updateQuantity(id, action) {
-    const display = document.getElementById(`qty-${id}`);
+// دالة تحديث الكمية
+function updateQuantity(domId, action) {
+    const display = document.getElementById(`qty-${domId}`);
     if (!display) return;
     let val = parseInt(display.textContent);
     if (action === 'inc') val++;
@@ -45,17 +46,18 @@ function updateQuantity(id, action) {
     display.textContent = val;
 }
 
-function addToCartDynamic(id, name) {
-    const qtyDisplay = document.getElementById(`qty-${id}`);
+function addToCartDynamic(domId, productId, name) {
+    const qtyDisplay = document.getElementById(`qty-${domId}`);
     const qty = qtyDisplay ? parseInt(qtyDisplay.textContent || 1) : 1;
 
-    const unitSelect = document.getElementById(`unit-select-${id}`);
+    const unitSelect = document.getElementById(`unit-select-${domId}`);
     const unit = unitSelect ? unitSelect.value : 'piece';
 
-    const priceText = document.getElementById(`display-price-${id}`).textContent;
+    const priceText = document.getElementById(`display-price-${domId}`).textContent;
     const price = parseFloat(priceText.replace(/[^\d.]/g, ''));
 
-    const cartItemId = `${id}-${unit}`;
+
+    const cartItemId = `${productId}-${unit}`;
 
     let unitLabel = "";
     if (unit === 'carton') unitLabel = isArabic ? "(كرتون)" : "(Carton)";
@@ -64,7 +66,7 @@ function addToCartDynamic(id, name) {
     if (cart[cartItemId]) {
         cart[cartItemId].qty += qty;
     } else {
-        cart[cartItemId] = { name: finalName, price: price, qty: qty, originalId: id, unit: unit };
+        cart[cartItemId] = { name: finalName, price: price, qty: qty, originalId: productId, unit: unit };
     }
 
     saveCart();
@@ -74,7 +76,6 @@ function addToCartDynamic(id, name) {
     if (qtyDisplay) qtyDisplay.textContent = 1;
     updateCartUI();
 }
-
 let currentProduct = null;
 let currentModalQty = 1;
 

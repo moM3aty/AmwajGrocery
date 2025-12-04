@@ -4,9 +4,10 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
+    ViewData["Title"] = "الرئيسية";
     var currentCulture = CultureInfo.CurrentUICulture.Name;
     var isAr = currentCulture.StartsWith("ar");
-    ViewData["Title"] = isAr ? "الرئيسية" : "Home";
+    ViewData["isAr"] = isAr; // توحيد اللغة
 
     var deals = ViewBag.Deals as List<Product>;
     var bestSellers = ViewBag.BestSellers as List<Product>;
@@ -16,6 +17,7 @@
 
 <div class="container" style="padding-top: 20px;">
 
+    <!-- قسم العروض (Hot Deals) -->
     <section class="page-section">
         <h2 style="color: var(--amwaj-accent); border-bottom: 2px solid var(--amwaj-accent); padding-bottom: 10px;">
             @(isAr ? "عروض وتخفيضات اليوم" : "Today's Deals")
@@ -25,7 +27,8 @@
             {
                 foreach (var item in deals)
                 {
-                    <partial name="_ProductCard" model="item" />
+                    // نمرر "deal" كمعرف للقسم
+                    <partial name="_ProductCard" model="item" view-data='new ViewDataDictionary(ViewData) { { "SectionId", "deal" } }' />
                 }
             }
             else
@@ -35,24 +38,26 @@
         </div>
     </section>
 
-    <section class="page-section" style="background-color: #fff; padding: 20px; border-radius: 10px;">
+    <!-- قسم الفئات -->
+    <section class="page-section" >
         <h2 style="color: var(--amwaj-text-dark);">@(isAr ? "تسوق حسب الفئة" : "Shop by Category")</h2>
         <div class="category-grid">
             @if (categories != null)
             {
                 foreach (var cat in categories)
                 {
-                    var displayCatName = isAr ? cat.NameAr : (string.IsNullOrEmpty(cat.NameEn) ? cat.NameAr : cat.NameEn);
                     <div class="category-card" onclick="location.href='/Home/Products?categoryId=@cat.Id'">
-                        <img src="@GetImageSrc(cat.ImageUrl)" alt="@displayCatName" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
-                        <h4>@displayCatName</h4>
-                        <p style="font-size: 0.8em; color: #777;">(@(cat.Products?.Count() ?? 0))</p>
+                        <img src="@GetImageSrc(cat.ImageUrl)" alt="@(isAr? cat.NameAr: cat.NameEn)"
+                             referrerpolicy="no-referrer" loading="lazy" onerror="this.src='@defaultImage'">
+                        <h4>@(isAr? cat.NameAr: cat.NameEn)</h4>
+                        <p >(@(cat.Products?.Count() ?? 0))</p>
                     </div>
                 }
             }
         </div>
     </section>
 
+    <!-- قسم الأكثر مبيعاً (Best Sellers) -->
     <section class="page-section">
         <h2 style="color: var(--amwaj-primary);">@(isAr ? "الأكثر مبيعاً" : "Best Sellers")</h2>
         <div class="product-grid">
@@ -60,7 +65,8 @@
             {
                 foreach (var item in bestSellers)
                 {
-                    <partial name="_ProductCard" model="item" />
+                    // نمرر "best" كمعرف للقسم
+                    <partial name="_ProductCard" model="item" view-data='new ViewDataDictionary(ViewData) { { "SectionId", "best" } }' />
                 }
             }
         </div>
