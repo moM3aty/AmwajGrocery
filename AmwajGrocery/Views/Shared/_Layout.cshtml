@@ -1,15 +1,21 @@
 ﻿@using System.Globalization
 @using Microsoft.AspNetCore.Mvc.Localization
+@using AmwajGrocery.Data
+
+@inject AppDbContext _context
 
 @{
-    // تحديد اللغة الحالية من النظام
     var currentCulture = CultureInfo.CurrentUICulture.Name;
     var isAr = currentCulture.StartsWith("ar");
     var dir = isAr ? "rtl" : "ltr";
     var langCode = isAr ? "ar" : "en";
 
-    // تحديد اللغة المعاكسة للزر
     var targetLang = isAr ? "en" : "ar";
+    var settings = _context.SiteSettings.FirstOrDefault(); 
+    var bannerTextAr = settings?.BannerTextAr ?? "✨ عروض موسمية وتخفيضات خاصة بانتظارك! تسوق الآن ووفر المزيد. ✨";
+    var bannerTextEn = settings?.BannerTextEn ?? "✨ Seasonal offers and special discounts await! Shop now and save more. ✨";
+
+    var currentBannerText = isAr ? bannerTextAr : bannerTextEn;
 }
 
 <!DOCTYPE html>
@@ -145,9 +151,10 @@
         </form>
 
         <div class="scrolling-banner">
-            <div class="container">
-                <span id="marquee-text">@(isAr ? "✨ عروض موسمية وتخفيضات خاصة بانتظارك! تسوق الآن ووفر المزيد. ✨   ✨ عروض موسمية وتخفيضات خاصة بانتظارك! تسوق الآن ووفر المزيد. ✨     ✨ عروض موسمية وتخفيضات خاصة بانتظارك! تسوق الآن ووفر المزيد. ✨    ✨ عروض موسمية وتخفيضات خاصة بانتظارك! تسوق الآن ووفر المزيد. ✨" : "✨ Seasonal offers and special discounts await! Shop now and save more. ✨      ✨ Seasonal offers and special discounts await! Shop now and save more. ✨     ✨ Seasonal offers and special discounts await! Shop now and save more. ✨   ✨ Seasonal offers and special discounts await! Shop now and save more. ✨  ")</span>
-
+            <div class="container" style="display: flex; width: 100%;">
+                <span>@currentBannerText</span>
+                <span aria-hidden="true">@currentBannerText</span>
+                <span aria-hidden="true">@currentBannerText</span>
             </div>
         </div>
     </header>

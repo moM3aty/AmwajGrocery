@@ -34,7 +34,10 @@
                 <i class="fas fa-tags fa-2x"></i>
                 <span>إدارة الفئات</span>
             </a>
-
+            <a href="/Admin/Settings" class="dashboard-card" style="background: linear-gradient(135deg, #fab1a0, #e17055);">
+                <i class="fas fa-cogs fa-2x"></i>
+                <span>إعدادات الموقع</span>
+            </a>
         </div>
     </div>
 
@@ -84,6 +87,7 @@
     </div>
 </div>
 
+
 <style>
     .dashboard-card {
         padding: 25px;
@@ -117,16 +121,10 @@
             fileNameDisplay.style.display = 'block';
         }
     }
-
     document.addEventListener('DOMContentLoaded', function() {
         var successMsg = '@TempData["SuccessMessage"]';
         var errorMsg = '@TempData["ErrorMessage"]';
-
-        if (successMsg) {
-            showToast(successMsg);
-        }
-        if (errorMsg) {
-            alert(errorMsg); 
-        }
+        if (successMsg) showToast(successMsg);
+        if (errorMsg) alert(errorMsg);
     });
 </script>

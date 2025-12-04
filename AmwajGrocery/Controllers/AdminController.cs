@@ -41,7 +41,52 @@ namespace AmwajGrocery.Controllers
             ViewBag.Error = "بيانات الدخول غير صحيحة";
             return View();
         }
+        [Authorize]
+        public async Task<IActionResult> Settings()
+        {
+            // نأتي بأول صف (لأننا نستخدم صف واحد فقط للإعدادات العامة)
+            var settings = await _context.SiteSettings.FirstOrDefaultAsync();
 
+            // لو مش موجود (لأي سبب)، بنعمل واحد جديد
+            if (settings == null)
+            {
+                settings = new SiteSetting
+                {
+                    BannerTextAr = "أهلاً بكم في متجرنا",
+                    BannerTextEn = "Welcome to our store"
+                };
+                _context.SiteSettings.Add(settings);
+                await _context.SaveChangesAsync();
+            }
+
+            return View(settings);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveSettings(SiteSetting model)
+        {
+            if (ModelState.IsValid)
+            {
+                var settings = await _context.SiteSettings.FirstOrDefaultAsync();
+                if (settings == null)
+                {
+                    _context.SiteSettings.Add(model);
+                }
+                else
+                {
+                    settings.BannerTextAr = model.BannerTextAr;
+                    settings.BannerTextEn = model.BannerTextEn;
+                    _context.SiteSettings.Update(settings);
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "تم حفظ الإعدادات بنجاح!";
+                return RedirectToAction("Settings");
+            }
+            return View("Settings", model);
+        }
         [Authorize]
         public IActionResult Dashboard() => View();
 
