@@ -267,7 +267,7 @@ async function sendOrderToWhatsApp() {
                 message += `🙏 Thank you Amwaj Salalah Grocery, see you in the next order! 💙`;
             }
 
-            const phone = "96896755118";
+            const phone = "96874154440";
             window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`, '_blank');
 
             cart = {};

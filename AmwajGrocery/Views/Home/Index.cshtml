@@ -7,7 +7,7 @@
     ViewData["Title"] = "الرئيسية";
     var currentCulture = CultureInfo.CurrentUICulture.Name;
     var isAr = currentCulture.StartsWith("ar");
-    ViewData["isAr"] = isAr; // توحيد اللغة
+    ViewData["isAr"] = isAr; 
 
     var deals = ViewBag.Deals as List<Product>;
     var bestSellers = ViewBag.BestSellers as List<Product>;
@@ -17,7 +17,6 @@
 
 <div class="container" style="padding-top: 20px;">
 
-    <!-- قسم العروض (Hot Deals) -->
     <section class="page-section">
         <h2 style="color: var(--amwaj-accent); border-bottom: 2px solid var(--amwaj-accent); padding-bottom: 10px;">
             @(isAr ? "عروض وتخفيضات اليوم" : "Today's Deals")
@@ -27,7 +26,7 @@
             {
                 foreach (var item in deals)
                 {
-                    // نمرر "deal" كمعرف للقسم
+                   
                     <partial name="_ProductCard" model="item" view-data='new ViewDataDictionary(ViewData) { { "SectionId", "deal" } }' />
                 }
             }
@@ -38,7 +37,7 @@
         </div>
     </section>
 
-    <!-- قسم الفئات -->
+
     <section class="page-section" >
         <h2 style="color: var(--amwaj-text-dark);">@(isAr ? "تسوق حسب الفئة" : "Shop by Category")</h2>
         <div class="category-grid">
@@ -57,7 +56,7 @@
         </div>
     </section>
 
-    <!-- قسم الأكثر مبيعاً (Best Sellers) -->
+
     <section class="page-section">
         <h2 style="color: var(--amwaj-primary);">@(isAr ? "الأكثر مبيعاً" : "Best Sellers")</h2>
         <div class="product-grid">
@@ -65,7 +64,7 @@
             {
                 foreach (var item in bestSellers)
                 {
-                    // نمرر "best" كمعرف للقسم
+             
                     <partial name="_ProductCard" model="item" view-data='new ViewDataDictionary(ViewData) { { "SectionId", "best" } }' />
                 }
             }

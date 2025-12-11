@@ -8,9 +8,7 @@
     var isAr = ViewData["isAr"] as bool? ?? CultureInfo.CurrentUICulture.Name.StartsWith("ar");
     var defaultImage = "/images/logo-removebg-preview (3).png";
 
-    // (FIX) استقبال معرف القسم لتمييز العناصر المكررة
     var sectionId = ViewData["SectionId"] as string ?? "main";
-    // إنشاء ID فريد للعنصر (مثل: 5-best أو 5-deal)
     var domId = $"{Model.Id}-{sectionId}";
 
     var displayName = isAr ? Model.NameAr : (string.IsNullOrEmpty(Model.NameEn) ? Model.NameAr : Model.NameEn);
@@ -46,11 +44,10 @@
         @displayName
     </h4>
 
-    <p style="font-size: 0.85em; color: #666; height: 3em; overflow: hidden; margin-bottom: 5px;">
+    <p style="font-size: 0.85em; color: #666; height: 5em; overflow: hidden; margin-bottom: 5px;">
         @(isAr? Model.ShortDescriptionAr: Model.ShortDescriptionEn)
     </p>
 
-    <!-- استخدام domId الفريد في الـ IDs -->
     <div class="unit-selector" style="margin-bottom: 10px; width: 100%;">
         @if (Model.PriceCarton.HasValue && Model.PriceCarton.Value > 0)
         {
@@ -81,7 +78,6 @@
         <button class="qty-btn" onclick="updateQuantity('@domId', 'inc')"><i class="fas fa-plus"></i></button>
     </div>
 
-    <!-- نمرر domId لقراءة القيم من الشاشة، ونمرر Model.Id الأصلي للوجيك السلة -->
     <button class="add-to-cart-btn" onclick="addToCartDynamic('@domId', @Model.Id, '@displayName.Replace("'", "\\'")')">
         @(isAr ? "أضف للسلة" : "Add to Cart")
     </button>

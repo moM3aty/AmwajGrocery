@@ -7,9 +7,7 @@ using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddLocalization();
-
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -24,13 +22,24 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
-var supportedCultures = new[] { new CultureInfo("ar"), new CultureInfo("en") };
+
+var arabicCulture = new CultureInfo("ar");
+arabicCulture.NumberFormat.NumberDecimalSeparator = ".";
+arabicCulture.NumberFormat.CurrencyDecimalSeparator = ".";
+
+var supportedCultures = new[] { arabicCulture, new CultureInfo("en") };
+
 var localizationOptions = new RequestLocalizationOptions
 {
-    DefaultRequestCulture = new RequestCulture("ar"),
+    DefaultRequestCulture = new RequestCulture(arabicCulture),
     SupportedCultures = supportedCultures,
     SupportedUICultures = supportedCultures
 };
+
+localizationOptions.RequestCultureProviders.Clear();
+localizationOptions.RequestCultureProviders.Add(new QueryStringRequestCultureProvider());
+localizationOptions.RequestCultureProviders.Add(new CookieRequestCultureProvider());
+
 app.UseRequestLocalization(localizationOptions);
 
 if (!app.Environment.IsDevelopment())

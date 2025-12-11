@@ -1,8 +1,10 @@
 ﻿@model AmwajGrocery.Models.Product
+@using System.Globalization
 @{
     ViewData["Title"] = Model.Id == 0 ? "إضافة منتج" : "تعديل منتج";
     var categories = ViewBag.Categories as List<AmwajGrocery.Models.Category>;
 }
+
 
 <style>
     .watermark-layer, #screenshot-overlay {
@@ -13,40 +15,26 @@
 
     body {
         filter: none !important;
-        -webkit-user-select: text !important; 
-        user-select: text !important;
+        -webkit-user-select: auto !important;
+        user-select: auto !important;
         pointer-events: auto !important;
     }
 
     .note-editor {
         z-index: 1000 !important;
-        position: relative;
         background-color: white;
-        box-shadow: none !important; 
     }
 
-    .note-popover, .note-dropdown-menu {
-        z-index: 100000 !important; 
-    }
-
-    .note-editor.note-frame.fullscreen {
-        z-index: 999999 !important;
-        background-color: white !important;
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100% !important;
-        height: 100% !important;
-        margin: 0 !important;
-    }
-
-    .note-editable {
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        cursor: text !important;
-    }
+        .note-editor.note-frame.fullscreen {
+            z-index: 999999 !important;
+            background-color: white !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+        }
 </style>
 
 <div class="container" style="padding-top: 40px; max-width: 900px;">
@@ -69,18 +57,26 @@
                     <input type="text" name="NameEn" value="@Model.NameEn" required class="form-input" style="direction: ltr;" />
                 </div>
 
+
                 <div class="form-group">
                     <label class="form-label">سعر القطعة (ر.ع)</label>
-                    <input type="number" step="0.001" name="Price" value="@(Model.Id == 0 ? "" : Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))" required class="form-input" placeholder="0.000" />
+                    <input type="number" step="0.001" name="Price"
+                           value="@(Model.Id == 0 ? "" : Model.Price.ToString(CultureInfo.InvariantCulture))"
+                           required class="form-input" placeholder="0.500" />
                 </div>
                 <div class="form-group">
                     <label class="form-label">سعر الكرتون (اختياري)</label>
-                    <input type="number" step="0.001" name="PriceCarton" value="@(Model.PriceCarton.HasValue? Model.PriceCarton.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")" class="form-input" placeholder="0.000" />
+                    <input type="number" step="0.001" name="PriceCarton"
+                           value="@(Model.PriceCarton.HasValue? Model.PriceCarton.Value.ToString(CultureInfo.InvariantCulture) : "")"
+                           class="form-input" placeholder="0.000" />
                 </div>
                 <div class="form-group">
                     <label class="form-label">سعر قديم (للخصم)</label>
-                    <input type="number" step="0.001" name="OldPrice" value="@(Model.OldPrice.HasValue? Model.OldPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")" class="form-input" />
+                    <input type="number" step="0.001" name="OldPrice"
+                           value="@(Model.OldPrice.HasValue? Model.OldPrice.Value.ToString(CultureInfo.InvariantCulture) : "")"
+                           class="form-input" />
                 </div>
+
                 <div class="form-group">
                     <label class="form-label">الفئة</label>
                     <select name="CategoryId" required class="form-input">
@@ -89,12 +85,15 @@
                         {
                             foreach (var cat in categories)
                             {
-                                <option value="@cat.Id" selected="@(Model.CategoryId == cat.Id ? "selected" : null)">@cat.NameAr / @cat.NameEn</option>
+                                <option value="@cat.Id" selected="@(Model.CategoryId == cat.Id ? "selected" : null)">
+                                    @cat.NameAr / @cat.NameEn
+                                </option>
                             }
                         }
                     </select>
                 </div>
 
+          
                 <div class="form-group">
                     <label class="form-label">وصف مختصر (عربي)</label>
                     <textarea name="ShortDescriptionAr" class="form-input" style="height:80px;">@Model.ShortDescriptionAr</textarea>
@@ -127,7 +126,9 @@
                     <input type="file" name="ImageFile" class="form-input" accept="image/*" />
                     @if (!string.IsNullOrEmpty(Model.ImageUrl))
                     {
-                        <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))" style="width:60px; margin-top:10px;" />
+                        <div style="margin-top:10px;">
+                            <img src="@(Model.ImageUrl.StartsWith("http") ? Model.ImageUrl : "/" + Model.ImageUrl.TrimStart('/'))" style="width:60px;" />
+                        </div>
                     }
                 </div>
 
@@ -161,37 +162,9 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
-
-            document.onselectstart = null;
-            document.ondragstart = null;
-            document.oncontextmenu = null;
-
-            window.removeEventListener('blur', function(){});
-
-            $('#summernote-ar').summernote({
-                placeholder: 'اكتب وصف المنتج التفصيلي هنا...',
-                tabsize: 2,
-                height: 200,
-                direction: 'rtl',
-                dialogsInBody: true, 
-                toolbar: [
-                  ['style', ['style']],
-                  ['font', ['bold', 'underline', 'clear']],
-                  ['color', ['color']],
-                  ['para', ['ul', 'ol', 'paragraph']],
-                  ['table', ['table']],
-                  ['insert', ['link', 'picture']],
-                  ['view', ['fullscreen', 'codeview', 'help']]
-                ]
-            });
-
-            $('#summernote-en').summernote({
-                placeholder: 'Write product details here...',
-                tabsize: 2,
-                height: 200,
-                direction: 'ltr',
-                dialogsInBody: true
-            });
+            document.onselectstart = null; document.ondragstart = null; document.oncontextmenu = null;
+            $('#summernote-ar').summernote({ placeholder: 'وصف تفصيلي...', tabsize: 2, height: 200, direction: 'rtl', dialogsInBody: true });
+            $('#summernote-en').summernote({ placeholder: 'Description...', tabsize: 2, height: 200, direction: 'ltr', dialogsInBody: true });
         });
     </script>
 }

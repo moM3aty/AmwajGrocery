@@ -44,10 +44,10 @@ namespace AmwajGrocery.Controllers
         [Authorize]
         public async Task<IActionResult> Settings()
         {
-            // نأتي بأول صف (لأننا نستخدم صف واحد فقط للإعدادات العامة)
+
             var settings = await _context.SiteSettings.FirstOrDefaultAsync();
 
-            // لو مش موجود (لأي سبب)، بنعمل واحد جديد
+
             if (settings == null)
             {
                 settings = new SiteSetting
